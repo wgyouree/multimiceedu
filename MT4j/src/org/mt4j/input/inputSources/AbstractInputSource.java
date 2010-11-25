@@ -42,7 +42,7 @@ public abstract class AbstractInputSource {
 	/** The event queue. */
 	private Deque<MTInputEvent> eventQueue;
 	
-	private MTApplication app;
+	protected MTApplication app;
 	
 	private List<IinputSourceListener> inputProcessorsToFireTo;
 	

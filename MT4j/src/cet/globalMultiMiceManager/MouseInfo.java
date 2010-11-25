@@ -1,4 +1,4 @@
-package cet.miceManager;
+package cet.globalMultiMiceManager;
 
 import org.mt4j.MTApplication;
 import org.mt4j.components.visibleComponents.shapes.MTEllipse;
@@ -49,7 +49,7 @@ public class MouseInfo {
 	
 	/** The cursor icon */
 	private MTPolygon cursorIcon;
-	
+		
 	public MouseInfo( int d, String name ){
 		device = d;
 		deviceName = name;

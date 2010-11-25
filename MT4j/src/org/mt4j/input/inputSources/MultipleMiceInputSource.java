@@ -38,7 +38,8 @@ import org.mt4j.util.manyMouse.ManyMouse;
 import org.mt4j.util.manyMouse.ManyMouseEvent;
 import org.mt4j.util.math.Vector3D;
 
-import cet.miceManager.MouseInfo;
+import cet.globalMultiMiceManager.MouseInfo;
+import cet.globalMultiMiceManager.MultipleMiceManager;
 
 
 /**
@@ -71,6 +72,9 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 	/** The current scene. */
 	private Iscene currentScene;
 	
+	/** The CET multiple mice manager */
+	private MultipleMiceManager cetMiceManager;
+	
 	/**
 	 * Instantiates a new multiple mice input source.
 	 * 
@@ -81,6 +85,7 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 		
 		this.maxScreenW = MT4jSettings.getInstance().getWindowWidth();
 		this.maxScreenH = MT4jSettings.getInstance().getWindowHeight();
+		
 		
 		mice = ManyMouse.Init();
 
@@ -95,7 +100,7 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 		event = new ManyMouseEvent(); //TODO mal austesten immer neuen zu machen
 		
 		deviceToMouseInfo = new WeakHashMap<Integer, MouseInfo>();
-
+				
 		applet.registerPost(this);
 
 		applet.registerDispose(this);
@@ -201,6 +206,8 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 								}
 							}
 							this.deviceToMouseInfo.remove(event.device);
+							if( cetMiceManager != null )
+								cetMiceManager.loseDevice(event.device);
 						} catch (Exception e) {
 							e.printStackTrace();
 						}
@@ -291,6 +298,13 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 			MouseInfo newMouseInfo = new MouseInfo(device, ManyMouse.DeviceName(device));
 			newMouseInfo.useDefaultCursorIcon(mtApp, currentScene, defaultCenterCam);
 			deviceToMouseInfo.put(device, newMouseInfo);
+			if( cetMiceManager != null )
+				cetMiceManager.addDevice(device);
+			else if( app.getCETMultiMiceManager() != null ){
+				cetMiceManager = app.getCETMultiMiceManager();
+				cetMiceManager.setDeviceToMouseInfo( deviceToMouseInfo );
+				cetMiceManager.addDevice(device);
+			}
 			
 			return	newMouseInfo; 
 		}else{
@@ -496,6 +510,9 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 		}
 	}
 
+	public int getEventSourceDevice(){
+		return event.device;
+	}
 
 	
 //	@Override
