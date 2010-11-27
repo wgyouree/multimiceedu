@@ -15,6 +15,10 @@ public class MultipleMiceManager {
 		return deviceToMouseInfo;
 	}
 	
+	public MouseInfo getMouseInfo(int device) {
+		return deviceToMouseInfo.get(device);
+	}
+	
 	public void setDeviceToMouseInfo( WeakHashMap<Integer, MouseInfo> dtmi ){
 		deviceToMouseInfo = dtmi;
 	}
@@ -41,6 +45,7 @@ public class MultipleMiceManager {
 	public boolean changeInstructorDeviceTo(int device){
 		if( deviceToMouseInfo.containsKey(device) ){
 			instructorDevice = device;
+			deviceToMouseInfo.get(device).setMouseRank(CETMouseRank.INSTRUCTOR);
 			return true;
 		}
 		return false;

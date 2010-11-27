@@ -49,6 +49,9 @@ public class MouseInfo {
 	
 	/** The cursor icon */
 	private MTPolygon cursorIcon;
+	
+	/** The rank of the device */
+	private CETMouseRank rank = CETMouseRank.STUDENT;
 		
 	public MouseInfo( int d, String name ){
 		device = d;
@@ -163,5 +166,13 @@ public class MouseInfo {
 	
 	public void setCursorIconColor(MTColor color){
 		cursorIcon.setFillColor( color );
+	}
+	
+	public void setMouseRank(CETMouseRank rank) {
+		this.rank = rank;
+	}
+	
+	public CETMouseRank getMouseRank() {
+		return this.rank;
 	}
 }
