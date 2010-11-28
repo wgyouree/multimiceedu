@@ -13,7 +13,8 @@ public class CETMultipleMiceManager {
 	protected ArrayList<ICETMiceChangeListener> listenerList;
 	
 	public CETMultipleMiceManager(){
-		ArrayList<ICETMiceChangeListener> listenerList = new ArrayList<ICETMiceChangeListener>();
+		this.listenerList = new ArrayList<ICETMiceChangeListener>();
+		this.deviceToMouseInfo = new WeakHashMap<Integer, MouseInfo>();
 	}
 	
 	public WeakHashMap<Integer, MouseInfo> getDeviceToMouseInfo(){
