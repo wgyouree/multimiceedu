@@ -37,7 +37,9 @@ import cet.globalMultiMiceManager.CETConflictEvent;
 import cet.globalMultiMiceManager.CETConflictType;
 import cet.globalMultiMiceManager.ICETConflictHandler;
 import cet.globalMultiMiceManager.ICETConflictListener;
+import cet.globalMultiMiceManager.cursors.CursorType;
 import cet.globalMultiMiceManager.listeners.DragConflictListener;
+import cet.globalMultiMiceManager.listeners.ScaleConflictListener;
 
 public class CETWindow extends MTRectangle implements ICETConflictListener {
 	
@@ -115,6 +117,8 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		topLeft.setNoFill(true);
 		topLeft.setStrokeColor(gray);
 		topLeft.setStrokeWeight(border);
+		topLeft.removeAllGestureEventListeners();
+		topLeft.addInputListener(new ScaleConflictListener(CursorType.TOP_LEFT, this, this, app));
 		super.addChild(topLeft);
 		
 		top = new MTPolygon(new Vertex[] {
@@ -124,6 +128,8 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		top.setNoFill(true);
 		top.setStrokeWeight(border);
 		top.setStrokeColor(gray);
+		top.removeAllGestureEventListeners();
+		top.addInputListener(new ScaleConflictListener(CursorType.TOP, this, this, app));
 		super.addChild(top);
 		
 		topRight = new MTPolygon(new Vertex[] {
@@ -134,6 +140,8 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		topRight.setNoFill(true);
 		topRight.setStrokeColor(gray);
 		topRight.setStrokeWeight(border);
+		topRight.removeAllGestureEventListeners();
+		topRight.addInputListener(new ScaleConflictListener(CursorType.TOP_RIGHT, this, this, app));
 		super.addChild(topRight);
 		
 		right = new MTPolygon(new Vertex[] {
@@ -143,6 +151,8 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		right.setNoFill(true);
 		right.setStrokeWeight(border);
 		right.setStrokeColor(gray);
+		right.removeAllGestureEventListeners();
+		right.addInputListener(new ScaleConflictListener(CursorType.RIGHT, this, this, app));
 		super.addChild(right);
 		
 		bottomRight = new MTPolygon(new Vertex[] {
@@ -153,6 +163,8 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		bottomRight.setNoFill(true);
 		bottomRight.setStrokeColor(gray);
 		bottomRight.setStrokeWeight(border);
+		bottomRight.removeAllGestureEventListeners();
+		bottomRight.addInputListener(new ScaleConflictListener(CursorType.BOTTOM_RIGHT, this, this, app));
 		super.addChild(bottomRight);
 		
 		bottom = new MTPolygon(new Vertex[] {
@@ -162,6 +174,8 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		bottom.setNoFill(true);
 		bottom.setStrokeWeight(border);
 		bottom.setStrokeColor(gray);
+		bottom.removeAllGestureEventListeners();
+		bottom.addInputListener(new ScaleConflictListener(CursorType.BOTTOM, this, this, app));
 		super.addChild(bottom);
 		
 		bottomLeft = new MTPolygon(new Vertex[] {
@@ -172,6 +186,8 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		bottomLeft.setNoFill(true);
 		bottomLeft.setStrokeColor(gray);
 		bottomLeft.setStrokeWeight(border);
+		bottomLeft.removeAllGestureEventListeners();
+		bottomLeft.addInputListener(new ScaleConflictListener(CursorType.BOTTOM_LEFT, this, this, app));
 		super.addChild(bottomLeft);
 		
 		left = new MTPolygon(new Vertex[] {
