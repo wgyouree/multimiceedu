@@ -6,6 +6,7 @@ import java.util.List;
 import javax.media.opengl.GL;
 
 import org.mt4j.MTApplication;
+import org.mt4j.components.MTComponent;
 import org.mt4j.components.clipping.Clip;
 import org.mt4j.components.interfaces.IMTComponent3D;
 import org.mt4j.components.visibleComponents.AbstractVisibleComponent;
@@ -13,12 +14,14 @@ import org.mt4j.components.visibleComponents.font.FontManager;
 import org.mt4j.components.visibleComponents.font.IFont;
 import org.mt4j.components.visibleComponents.shapes.MTRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
-import org.mt4j.components.visibleComponents.widgets.MTWindow;
 import org.mt4j.input.IMTInputEventListener;
 import org.mt4j.input.inputData.AbstractCursorInputEvt;
 import org.mt4j.input.inputData.InputCursor;
 import org.mt4j.input.inputData.MTInputEvent;
-import org.mt4j.input.inputProcessors.componentProcessors.scaleProcessor.ScaleProcessor;
+import org.mt4j.input.inputProcessors.IGestureEventListener;
+import org.mt4j.input.inputProcessors.MTGestureEvent;
+import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
+import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
 import org.mt4j.input.inputSources.MultipleMiceInputSource;
 import org.mt4j.util.MTColor;
 
@@ -45,17 +48,51 @@ public class CETWindow extends MTRectangle {
 	private static final float titleMarginTop = 5;
 	private static final int titleFontSize = 12;
 	
-	private String title;
+	private String title = "Window";
 	private MTTextArea titleTextArea;
 	
 	private List<ICETConflictHandler> conflictHandlers = new ArrayList<ICETConflictHandler>();
-	
-	private ConflictListener conflictListener;
 	
 	private MTApplication app;
 	
 	private float width;
 	private float height;
+	
+	private CETWindow window;
+	
+	private IGestureEventListener dragListener = new IGestureEventListener() {
+		private IMTComponent3D dragTarget;
+		
+		/* (non-Javadoc)
+		 * @see com.jMT.input.gestureAction.IGestureAction#processGesture(com.jMT.input.inputAnalyzers.GestureEvent)
+		 */
+		public boolean processGestureEvent(MTGestureEvent g) {
+			if (g instanceof DragEvent){
+				DragEvent dragEvent = (DragEvent)g;
+				dragTarget = window;
+				switch (dragEvent.getId()) {
+				case MTGestureEvent.GESTURE_DETECTED:
+					//Put target on top -> draw on top of others
+					if (dragTarget instanceof MTComponent){
+						MTComponent baseComp = (MTComponent)dragTarget;
+						baseComp.sendToFront();
+					}
+					dragTarget.translateGlobal(dragEvent.getTranslationVect());
+					break;
+				case MTGestureEvent.GESTURE_UPDATED:
+					dragTarget.translateGlobal(dragEvent.getTranslationVect());
+					break;
+				case MTGestureEvent.GESTURE_ENDED:
+					break;
+				default:
+					break;
+				}
+			}
+			return false;
+		}
+	};
+
+	private ConflictListener conflictListener;
 	
 	private class ConflictListener implements IMTInputEventListener {
 		
@@ -138,6 +175,7 @@ public class CETWindow extends MTRectangle {
 		this.app = applet;
 		this.width = width;
 		this.height = height;
+		this.window = this;
 		
 		//Create inner children clip shape
 		float border = 1;
@@ -164,8 +202,11 @@ public class CETWindow extends MTRectangle {
 		titleBar.setPickable(false);
 		this.addChild(titleBar);
 		
-		// remove gesture listeners
-		this.removeAllGestureEventListeners(ScaleProcessor.class);
+		// set the title
+		this.setTitle(this.title);
+		
+		// remove default gesture listeners
+		this.removeAllGestureEventListeners();
 		
 		// add conflict listener
 		this.conflictListener = new ConflictListener(this, applet);
@@ -254,10 +295,18 @@ public class CETWindow extends MTRectangle {
 			this.titleTextArea = new MTTextArea(titleMarginLeft, titleMarginTop, this.width, titleBarHeight - (2*titleMarginTop), fontArial, this.app);
 			this.titleTextArea.setNoStroke(true);
 			this.titleTextArea.setNoFill(true);
+			this.titleTextArea.removeAllGestureEventListeners();
+			this.titleTextArea.registerInputProcessor(new DragProcessor(this.titleTextArea.getRenderer()));
+			this.titleTextArea.setGestureAllowance(DragProcessor.class, true);
+			this.titleTextArea.addGestureListener(DragProcessor.class, this.dragListener);
 			this.addChild(this.titleTextArea);
 		}
 		
 		this.titleTextArea.setText(this.title);
 		
+	}
+	
+	public String getTitle() {
+		return this.title;
 	}
 }
