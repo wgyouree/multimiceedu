@@ -39,7 +39,7 @@ import org.mt4j.util.manyMouse.ManyMouseEvent;
 import org.mt4j.util.math.Vector3D;
 
 import cet.globalMultiMiceManager.MouseInfo;
-import cet.globalMultiMiceManager.MultipleMiceManager;
+import cet.globalMultiMiceManager.CETMultipleMiceManager;
 
 
 /**
@@ -73,7 +73,7 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 	private Iscene currentScene;
 	
 	/** The CET multiple mice manager */
-	private MultipleMiceManager cetMiceManager;
+	private CETMultipleMiceManager cetMiceManager;
 	
 	/**
 	 * Instantiates a new multiple mice input source.
