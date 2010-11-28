@@ -15,7 +15,7 @@ public class WindowTest extends AbstractScene {
 		this.registerGlobalInputProcessor(new CursorTracer(mtApplication, this));
 		
 		// create a window
-		CETWindow window = new CETWindow(0,0,0,100,100,mtApplication);
+		CETWindow window = new CETWindow(0,0,0,400,400,mtApplication);
 		this.getCanvas().addChild(window);
 	}
 	@Override
