@@ -21,16 +21,29 @@ public class CETcomponentMultiMiceControl implements ICETMiceChangeListener{
 		globalMMmanager = m;
 		studentDeviceList = new ArrayList<Integer>();
 		isCollaborative = false;
+		addAllStudentDevices();
 	}
 	
 	public void addStudentDevice( int device ) {
-		if( !studentDeviceList.contains(device) )
+		if( !studentDeviceList.contains(device) && globalMMmanager.getInstructorDevice() != device )
 			studentDeviceList.add( device );
 	}
 	
 	public void removeStudentDevice( int device ) {
 		if( studentDeviceList.contains(device) )
 			studentDeviceList.remove( device );
+	}
+	
+	public void addAllStudentDevices() {
+		studentDeviceList.clear();
+		for( int device : globalMMmanager.getDeviceToMouseInfo().keySet() ){
+			if( device != globalMMmanager.getInstructorDevice() )
+				studentDeviceList.add( device );
+		}
+	}
+	
+	public void removeAllStudentDevices() {
+		studentDeviceList.clear();
 	}
 	
 	public ArrayList<Integer> getStudentDeviceList(){
