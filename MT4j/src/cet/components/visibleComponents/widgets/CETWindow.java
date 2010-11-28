@@ -24,6 +24,7 @@ import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEven
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
 import org.mt4j.input.inputSources.MultipleMiceInputSource;
 import org.mt4j.util.MTColor;
+import org.mt4j.util.math.Vector3D;
 
 import processing.core.PGraphics;
 import processing.opengl.PGraphicsOpenGL;
@@ -70,6 +71,7 @@ public class CETWindow extends MTRectangle {
 			if (g instanceof DragEvent){
 				DragEvent dragEvent = (DragEvent)g;
 				dragTarget = window;
+				Vector3D vector = dragEvent.getTranslationVect();
 				switch (dragEvent.getId()) {
 				case MTGestureEvent.GESTURE_DETECTED:
 					//Put target on top -> draw on top of others
@@ -77,10 +79,14 @@ public class CETWindow extends MTRectangle {
 						MTComponent baseComp = (MTComponent)dragTarget;
 						baseComp.sendToFront();
 					}
-					dragTarget.translateGlobal(dragEvent.getTranslationVect());
+					vector.x = vector.x / 2;
+					vector.y = vector.y / 2;
+					dragTarget.translateGlobal(vector);
 					break;
 				case MTGestureEvent.GESTURE_UPDATED:
-					dragTarget.translateGlobal(dragEvent.getTranslationVect());
+					vector.x = vector.x / 2;
+					vector.y = vector.y / 2;
+					dragTarget.translateGlobal(vector);
 					break;
 				case MTGestureEvent.GESTURE_ENDED:
 					break;
