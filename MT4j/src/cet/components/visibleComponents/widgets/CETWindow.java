@@ -9,7 +9,10 @@ import org.mt4j.MTApplication;
 import org.mt4j.components.clipping.Clip;
 import org.mt4j.components.interfaces.IMTComponent3D;
 import org.mt4j.components.visibleComponents.AbstractVisibleComponent;
+import org.mt4j.components.visibleComponents.font.FontManager;
+import org.mt4j.components.visibleComponents.font.IFont;
 import org.mt4j.components.visibleComponents.shapes.MTRectangle;
+import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.components.visibleComponents.widgets.MTWindow;
 import org.mt4j.input.IMTInputEventListener;
 import org.mt4j.input.inputData.AbstractCursorInputEvt;
@@ -37,11 +40,22 @@ public class CETWindow extends MTRectangle {
 	/** The saved no stroke setting. */
 	private boolean savedNoStrokeSetting;
 	
-	private static final float titleBarHeight = 40;
+	private static final float titleBarHeight = 30;
+	private static final float titleMarginLeft = 5;
+	private static final float titleMarginTop = 5;
+	private static final int titleFontSize = 12;
+	
+	private String title;
+	private MTTextArea titleTextArea;
 	
 	private List<ICETConflictHandler> conflictHandlers = new ArrayList<ICETConflictHandler>();
 	
 	private ConflictListener conflictListener;
+	
+	private MTApplication app;
+	
+	private float width;
+	private float height;
 	
 	private class ConflictListener implements IMTInputEventListener {
 		
@@ -114,8 +128,16 @@ public class CETWindow extends MTRectangle {
 		}
 	}
 
+	public CETWindow(String title, float x, float y, float z, float width, float height, MTApplication applet) {
+		this(x, y, z, width, height, applet);
+		this.setTitle(title);
+	}
+	
 	public CETWindow(float x, float y, float z, float width, float height, MTApplication applet) {
 		super(x, y, z, width, height, applet);
+		this.app = applet;
+		this.width = width;
+		this.height = height;
 		
 		//Create inner children clip shape
 		float border = 1;
@@ -210,22 +232,32 @@ public class CETWindow extends MTRectangle {
 		super.postDrawChildren(g);
 		this.setChildClip(clip);
 	}
-
-
-
-//	@Override
-//	public void setStrokeColor(float r, float g, float b, float a) {
-//		super.setStrokeColor(r, g, b, a);
-//		this.clip.getClipShape().setStrokeColor(r, g, b, a);
-//	}
 	
 	/* (non-Javadoc)
- * @see org.mt4j.components.visibleComponents.shapes.AbstractShape#setStrokeColor(org.mt4j.util.MTColor)
- */
-@Override
+	 * @see org.mt4j.components.visibleComponents.shapes.AbstractShape#setStrokeColor(org.mt4j.util.MTColor)
+	 */
+	@Override
 	public void setStrokeColor(MTColor strokeColor) {
 		super.setStrokeColor(strokeColor);
 		this.clip.getClipShape().setStrokeColor(strokeColor); //FIXME wtf? not needed!?
 	}
 
+	public void setTitle(String title) {
+		this.title = title;
+		if ( this.titleTextArea == null ) {
+			MTColor white = new MTColor(0,0,0, 200);
+			IFont fontArial = FontManager.getInstance().createFont(this.app, "arial.ttf", 
+					titleFontSize, 	//Font size
+					white,  //Font fill color
+					white);	//Font outline color
+			//Create a textfield
+			this.titleTextArea = new MTTextArea(titleMarginLeft, titleMarginTop, this.width, titleBarHeight - (2*titleMarginTop), fontArial, this.app);
+			this.titleTextArea.setNoStroke(true);
+			this.titleTextArea.setNoFill(true);
+			this.addChild(this.titleTextArea);
+		}
+		
+		this.titleTextArea.setText(this.title);
+		
+	}
 }
