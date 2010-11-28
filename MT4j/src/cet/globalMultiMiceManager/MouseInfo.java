@@ -1,12 +1,25 @@
 package cet.globalMultiMiceManager;
 
 import org.mt4j.MTApplication;
+import org.mt4j.components.visibleComponents.shapes.AbstractShape;
+import org.mt4j.components.visibleComponents.shapes.MTComplexPolygon;
 import org.mt4j.components.visibleComponents.shapes.MTEllipse;
 import org.mt4j.components.visibleComponents.shapes.MTPolygon;
 import org.mt4j.sceneManagement.Iscene;
 import org.mt4j.util.MTColor;
 import org.mt4j.util.camera.Icamera;
 import org.mt4j.util.math.Vector3D;
+
+import cet.globalMultiMiceManager.cursors.ArrowCursor;
+import cet.globalMultiMiceManager.cursors.BottomCursor;
+import cet.globalMultiMiceManager.cursors.BottomLeftCursor;
+import cet.globalMultiMiceManager.cursors.BottomRightCursor;
+import cet.globalMultiMiceManager.cursors.CursorType;
+import cet.globalMultiMiceManager.cursors.LeftCursor;
+import cet.globalMultiMiceManager.cursors.RightCursor;
+import cet.globalMultiMiceManager.cursors.TopCursor;
+import cet.globalMultiMiceManager.cursors.TopLeftCursor;
+import cet.globalMultiMiceManager.cursors.TopRightCursor;
 
 public class MouseInfo {
 	public static final MTColor red = new MTColor(255, 0, 0, 180);
@@ -48,7 +61,7 @@ public class MouseInfo {
 	private boolean isButtonPressed = false;
 	
 	/** The cursor icon */
-	private MTPolygon cursorIcon;
+	private AbstractShape cursorIcon;
 	
 	/** The rank of the device */
 	private CETMouseRank rank = CETMouseRank.STUDENT;
@@ -62,7 +75,7 @@ public class MouseInfo {
 		lastY = 0;
 	}
 	
-	public void useDefaultCursorIcon(MTApplication mtApp, Iscene currentScene, Icamera defaultCenterCam){
+	public void useCursorIcon(CursorType type, MTApplication mtApp, Iscene currentScene, Icamera defaultCenterCam) {
 		if (mtApp != null){
 			float currentEllipseWidth = 6;
 			if (currentScene != null){
@@ -71,7 +84,41 @@ public class MouseInfo {
 				currentEllipseWidth = v.length();
 			}
 			
-			cursorIcon = new MTEllipse(mtApp, new Vector3D(x, y), currentEllipseWidth, currentEllipseWidth, 10);
+			if ( cursorIcon != null ) {
+				cursorIcon = null;
+			}
+			switch ( type ) {
+			case ARROW:
+				cursorIcon = new ArrowCursor(mtApp, new Vector3D(x,y));
+				break;
+			case TOP_LEFT:
+				cursorIcon = new TopLeftCursor(mtApp, new Vector3D(x,y));
+				break;
+			case TOP:
+				cursorIcon = new TopCursor(mtApp, new Vector3D(x,y));
+				break;
+			case TOP_RIGHT:
+				cursorIcon = new TopRightCursor(mtApp, new Vector3D(x,y));
+				break;
+			case RIGHT:
+				cursorIcon = new RightCursor(mtApp, new Vector3D(x,y));
+				break;
+			case BOTTOM_RIGHT:
+				cursorIcon = new BottomRightCursor(mtApp, new Vector3D(x,y));
+				break;
+			case BOTTOM:
+				cursorIcon = new BottomCursor(mtApp, new Vector3D(x,y));
+				break;
+			case BOTTOM_LEFT:
+				cursorIcon = new BottomLeftCursor(mtApp, new Vector3D(x,y));
+				break;
+			case LEFT:
+				cursorIcon = new LeftCursor(mtApp, new Vector3D(x,y));
+				break;
+			default:
+				System.err.println("Unrecognized CursorType");
+				break;
+			}
 			cursorIcon.setPickable(false);
 			cursorIcon.attachCamera(defaultCenterCam);
 			cursorIcon.setFillColor( basicColorList[ device % basicColorList.length ] );
@@ -82,15 +129,19 @@ public class MouseInfo {
 		}
 	}
 	
-	public void updateCursorIconOnSceneChange(Iscene currentScene){
-		float currentEllipseWidth = 6;
-		Vector3D v = new Vector3D(currentEllipseWidth,0,0);
-		v.transformDirectionVector(currentScene.getCanvas().getGlobalInverseMatrix());
-		float newEllipseWidth = currentEllipseWidth = v.length();
-		cursorIcon.setWidthXYGlobal(newEllipseWidth*2);
+	public void useDefaultCursorIcon(MTApplication mtApp, Iscene currentScene, Icamera defaultCenterCam){
+		useCursorIcon(CursorType.ARROW, mtApp, currentScene, defaultCenterCam);
 	}
 	
-	public MTPolygon getCursorIcon(){
+	public void updateCursorIconOnSceneChange(Iscene currentScene){
+		//float currentEllipseWidth = 6;
+		//Vector3D v = new Vector3D(currentEllipseWidth,0,0);
+		//v.transformDirectionVector(currentScene.getCanvas().getGlobalInverseMatrix());
+		//float newEllipseWidth = currentEllipseWidth = v.length();
+		//cursorIcon.setWidthXYGlobal(newEllipseWidth*2);
+	}
+	
+	public AbstractShape getCursorIcon(){
 		return cursorIcon;
 	}
 	
