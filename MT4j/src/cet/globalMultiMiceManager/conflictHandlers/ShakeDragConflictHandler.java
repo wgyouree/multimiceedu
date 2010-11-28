@@ -12,15 +12,17 @@ public class ShakeDragConflictHandler implements ICETConflictHandler {
 	@Override
 	public boolean handleConflict(CETConflictEvent event) {
 		if ( event.getType() == CETConflictType.DRAG ) {
+			System.out.println("ShakeDragConflictHandler handling conflict");
 			Animator animator = new Animator(
 				event.getComponent(),
-				new Integer[] { 1, 1, 1, 1, 1 },
+				new Integer[] { 500, 500, 500, 500, 500, 500 },
 				new Vector3D[] {
-					new Vector3D(-5, 0),
-					new Vector3D(5, 0),
-					new Vector3D(-5, 0),
-					new Vector3D(5, 0),
-					new Vector3D(-5, 0)
+					new Vector3D(-10, 0),
+					new Vector3D(20, 0),
+					new Vector3D(-20, 0),
+					new Vector3D(20, 0),
+					new Vector3D(-20, 0),
+					new Vector3D(10, 0)
 				}
 			);
 			animator.start();
