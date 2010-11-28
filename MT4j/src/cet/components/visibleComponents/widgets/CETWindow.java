@@ -12,6 +12,7 @@ import org.mt4j.components.interfaces.IMTComponent3D;
 import org.mt4j.components.visibleComponents.AbstractVisibleComponent;
 import org.mt4j.components.visibleComponents.font.FontManager;
 import org.mt4j.components.visibleComponents.font.IFont;
+import org.mt4j.components.visibleComponents.shapes.MTPolygon;
 import org.mt4j.components.visibleComponents.shapes.MTRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
 import org.mt4j.input.IMTInputEventListener;
@@ -19,6 +20,7 @@ import org.mt4j.input.inputData.AbstractCursorInputEvt;
 import org.mt4j.input.inputData.InputCursor;
 import org.mt4j.input.inputData.MTInputEvent;
 import org.mt4j.input.inputProcessors.IGestureEventListener;
+import org.mt4j.input.inputProcessors.IInputProcessor;
 import org.mt4j.input.inputProcessors.MTGestureEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
 import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
@@ -32,8 +34,10 @@ import processing.opengl.PGraphicsOpenGL;
 import cet.globalMultiMiceManager.CETConflictEvent;
 import cet.globalMultiMiceManager.CETConflictType;
 import cet.globalMultiMiceManager.ICETConflictHandler;
+import cet.globalMultiMiceManager.ICETConflictListener;
+import cet.globalMultiMiceManager.listeners.DragConflictListener;
 
-public class CETWindow extends MTRectangle {
+public class CETWindow extends MTRectangle implements ICETConflictListener {
 	
 	/** The clip. */
 	private Clip clip;
@@ -59,117 +63,19 @@ public class CETWindow extends MTRectangle {
 	private float width;
 	private float height;
 	
-	private CETWindow window;
+	// border, for resizing
+	private MTPolygon topLeft;
+	private MTPolygon top;
+	private MTPolygon topRight;
+	private MTPolygon right;
+	private MTPolygon bottomRight;
+	private MTPolygon bottom;
+	private MTPolygon bottomLeft;
+	private MTPolygon left;
 	
-	private IGestureEventListener dragListener = new IGestureEventListener() {
-		private IMTComponent3D dragTarget;
-		
-		/* (non-Javadoc)
-		 * @see com.jMT.input.gestureAction.IGestureAction#processGesture(com.jMT.input.inputAnalyzers.GestureEvent)
-		 */
-		public boolean processGestureEvent(MTGestureEvent g) {
-			if (g instanceof DragEvent){
-				DragEvent dragEvent = (DragEvent)g;
-				dragTarget = window;
-				Vector3D vector = dragEvent.getTranslationVect();
-				switch (dragEvent.getId()) {
-				case MTGestureEvent.GESTURE_DETECTED:
-					//Put target on top -> draw on top of others
-					if (dragTarget instanceof MTComponent){
-						MTComponent baseComp = (MTComponent)dragTarget;
-						baseComp.sendToFront();
-					}
-					vector.x = vector.x / 2;
-					vector.y = vector.y / 2;
-					dragTarget.translateGlobal(vector);
-					break;
-				case MTGestureEvent.GESTURE_UPDATED:
-					vector.x = vector.x / 2;
-					vector.y = vector.y / 2;
-					dragTarget.translateGlobal(vector);
-					break;
-				case MTGestureEvent.GESTURE_ENDED:
-					break;
-				default:
-					break;
-				}
-			}
-			return false;
-		}
-	};
-
-	private ConflictListener conflictListener;
+	// conflict listeners
+	private DragConflictListener dragConflictListener;
 	
-	private class ConflictListener implements IMTInputEventListener {
-		
-		// the device currently using this input listener
-		private int device = -1;
-		
-		// the window to which this listener belongs
-		private CETWindow window;
-		
-		// the MTApplication
-		private MTApplication app;
-		
-		public ConflictListener(CETWindow window, MTApplication app) {
-			this.window = window;
-			this.app = app;
-		}
-		
-		@Override
-		public boolean processInputEvent(MTInputEvent inEvt) {
-			if (inEvt instanceof AbstractCursorInputEvt) { //Most input events in MT4j are an instance of AbstractCursorInputEvt (mouse, multi-touch..)
-				AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
-				InputCursor cursor = cursorInputEvt.getCursor();
-				IMTComponent3D target = cursorInputEvt.getTargetComponent();
-				int theDevice = -1;
-				if( inEvt.getSource() instanceof MultipleMiceInputSource ) {
-					theDevice = ((MultipleMiceInputSource) inEvt.getSource() ).getEventSourceDevice();
-				}
-				switch (cursorInputEvt.getId()) {
-				case AbstractCursorInputEvt.INPUT_DETECTED:
-					if ( theDevice >= 0 && device >= 0 ) {
-						// conflict
-						window.fireConflict(new CETConflictEvent(inEvt, CETConflictType.MOVE, app, new Integer[] { device, theDevice }) );
-						System.out.println("Conflict detected");
-					} else if ( theDevice >= 0 ) {
-						device = theDevice;
-					}
-					System.out.println("Input detected on: " + target + " at " + cursor.getCurrentEvtPosX() + "," + cursor.getCurrentEvtPosY());
-					break;
-				case AbstractCursorInputEvt.INPUT_UPDATED:
-					if ( theDevice >= 0 && device >= 0 && theDevice != device ) {
-						// conflict
-						window.fireConflict(new CETConflictEvent(inEvt, CETConflictType.MOVE, app, new Integer[] { device, theDevice }) );
-						System.out.println("Conflict detected");
-					} else if ( theDevice >= 0 ) {
-						device = theDevice;
-					}
-					System.out.println("Input updated on: " + target + " at " + cursor.getCurrentEvtPosX() + "," + cursor.getCurrentEvtPosY());			
-					break;
-				case AbstractCursorInputEvt.INPUT_ENDED:
-					if ( device == theDevice ) {
-						System.out.println("Resetting device");
-						device = -1;
-					}
-					else if ( theDevice >= 0 && device >= 0 && theDevice != device ) {
-						// conflict
-						window.fireConflict(new CETConflictEvent(inEvt, CETConflictType.MOVE, app, new Integer[] { device, theDevice }) );
-						System.out.println("Conflict detected");
-					} else if ( theDevice >= 0 ) {
-						device = theDevice;
-					}
-					System.out.println("Input ended on: " + target + " at " + cursor.getCurrentEvtPosX() + "," + cursor.getCurrentEvtPosY());
-					break;
-				default:
-					break;
-				}
-			}else{
-				//handle other input events
-			}
-			return false;
-		}
-	}
 
 	public CETWindow(String title, float x, float y, float z, float width, float height, MTApplication applet) {
 		this(x, y, z, width, height, applet);
@@ -181,7 +87,6 @@ public class CETWindow extends MTRectangle {
 		this.app = applet;
 		this.width = width;
 		this.height = height;
-		this.window = this;
 		
 		//Create inner children clip shape
 		float border = 1;
@@ -214,10 +119,6 @@ public class CETWindow extends MTRectangle {
 		// remove default gesture listeners
 		this.removeAllGestureEventListeners();
 		
-		// add conflict listener
-		this.conflictListener = new ConflictListener(this, applet);
-		this.addInputListener(conflictListener);
-		
 		//Draw this component and its children above 
 		//everything previously drawn and avoid z-fighting //FIXME but we cant use 3D stuff in there then..
 		this.setDepthBufferDisabled(true);
@@ -231,7 +132,7 @@ public class CETWindow extends MTRectangle {
 		conflictHandlers.remove(handler);
 	}
 	
-	private void fireConflict(CETConflictEvent event) {
+	public void processConflict(CETConflictEvent event) {
 		for ( ICETConflictHandler handler : conflictHandlers ) {
 			handler.handleConflict(event);
 		}
@@ -246,7 +147,6 @@ public class CETWindow extends MTRectangle {
 		super.preDraw(graphics);
 	}
 	
-
 	/* (non-Javadoc)
 	 * @see org.mt4j.components.visibleComponents.AbstractVisibleComponent#postDrawChildren(processing.core.PGraphics)
 	 */
@@ -302,9 +202,9 @@ public class CETWindow extends MTRectangle {
 			this.titleTextArea.setNoStroke(true);
 			this.titleTextArea.setNoFill(true);
 			this.titleTextArea.removeAllGestureEventListeners();
-			this.titleTextArea.registerInputProcessor(new DragProcessor(this.titleTextArea.getRenderer()));
-			this.titleTextArea.setGestureAllowance(DragProcessor.class, true);
-			this.titleTextArea.addGestureListener(DragProcessor.class, this.dragListener);
+			
+			this.dragConflictListener = new DragConflictListener(this, this, app);
+			this.titleTextArea.addInputListener(dragConflictListener);
 			this.addChild(this.titleTextArea);
 		}
 		
