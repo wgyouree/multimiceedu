@@ -27,6 +27,7 @@ import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProc
 import org.mt4j.input.inputSources.MultipleMiceInputSource;
 import org.mt4j.util.MTColor;
 import org.mt4j.util.math.Vector3D;
+import org.mt4j.util.math.Vertex;
 
 import processing.core.PGraphics;
 import processing.opengl.PGraphicsOpenGL;
@@ -40,19 +41,14 @@ import cet.globalMultiMiceManager.listeners.DragConflictListener;
 
 public class CETWindow extends MTRectangle implements ICETConflictListener {
 	
-	/** The clip. */
-	private Clip clip;
-	
-	/** The draw inner border. */
-	private boolean drawInnerBorder;
-	
-	/** The saved no stroke setting. */
-	private boolean savedNoStrokeSetting;
+	private MTRectangle contentArea;
 	
 	private static final float titleBarHeight = 30;
 	private static final float titleMarginLeft = 5;
 	private static final float titleMarginTop = 5;
 	private static final int titleFontSize = 12;
+	private static final float resizeMargin = 15;
+	private static final float resizeWidth = 1;
 	
 	private String title = "Window";
 	private MTTextArea titleTextArea;
@@ -94,30 +90,98 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		// Register Floor Controls for this component
 		this.floorControl = new CETcomponentMultiMiceControl(app.getCETMultiMiceManager());
 		
-		//Create inner children clip shape
-		float border = 1;
-		GL gl = ((PGraphicsOpenGL)applet.g).gl;
-		MTRectangle clipRect =  new MTRectangle(x+border, y+border, z, width-(2*border), height-(2*border), applet);
-		clipRect.setDrawSmooth(true);
-		clipRect.setNoStroke(true);
-		clipRect.setBoundsBehaviour(MTRectangle.BOUNDS_ONLY_CHECK);
-		this.clip = new Clip(gl, clipRect);
-		this.setChildClip(this.clip);
-		this.drawInnerBorder = true;
-		
 		//Add window background
-		final MTRectangle windowBackGround = new MTRectangle(x, y, z, width, height, applet);
-		windowBackGround.setFillColor(new MTColor(200,200,200,255));
-		windowBackGround.setNoStroke(true);
-		windowBackGround.setPickable(false);
-		this.addChild(windowBackGround);
+		float border = resizeWidth;
+		this.contentArea = new ClippedRectangle(border, titleBarHeight+border, z, width-(2*border), height-titleBarHeight-(2*border), applet);
+		this.contentArea.setFillColor(new MTColor(200,200,200,255));
+		this.contentArea.setNoStroke(true);
+		this.contentArea.setPickable(false);
+		super.addChild(this.contentArea);
 		
 		// add title bar
-		final MTRectangle titleBar = new MTRectangle(0, 0, width, titleBarHeight, applet);
+		final MTRectangle titleBar = new MTRectangle(0+border, 0+border, width-(2*border), titleBarHeight, applet);
 		titleBar.setFillColor(new MTColor(100,100,100,255));
 		titleBar.setNoStroke(true);
 		titleBar.setPickable(false);
-		this.addChild(titleBar);
+		super.addChild(titleBar);
+		
+		// draw resize border
+		MTColor gray = new MTColor(139, 137, 137);
+		topLeft = new MTPolygon(new Vertex[] {
+			new Vertex( x, y+resizeMargin ),
+			new Vertex( x, y ),
+			new Vertex( x+resizeMargin, y )
+		}, app);
+		topLeft.setNoFill(true);
+		topLeft.setStrokeColor(gray);
+		topLeft.setStrokeWeight(border);
+		super.addChild(topLeft);
+		
+		top = new MTPolygon(new Vertex[] {
+			new Vertex( x+resizeMargin, y ),
+			new Vertex( x+width-resizeMargin, y )
+		}, app);
+		top.setNoFill(true);
+		top.setStrokeWeight(border);
+		top.setStrokeColor(gray);
+		super.addChild(top);
+		
+		topRight = new MTPolygon(new Vertex[] {
+			new Vertex( x+width-resizeMargin, y ),
+			new Vertex( x+width, y ),
+			new Vertex( x+width, y+resizeMargin )
+		}, app);
+		topRight.setNoFill(true);
+		topRight.setStrokeColor(gray);
+		topRight.setStrokeWeight(border);
+		super.addChild(topRight);
+		
+		right = new MTPolygon(new Vertex[] {
+			new Vertex( x+width, y+resizeMargin ),
+			new Vertex( x+width, y+height-resizeMargin )
+		}, app);
+		right.setNoFill(true);
+		right.setStrokeWeight(border);
+		right.setStrokeColor(gray);
+		super.addChild(right);
+		
+		bottomRight = new MTPolygon(new Vertex[] {
+			new Vertex( x+width, y+height-resizeMargin ),
+			new Vertex( x+width, y+height-border ),
+			new Vertex( x+width-resizeMargin, y+height-border )
+		}, app);
+		bottomRight.setNoFill(true);
+		bottomRight.setStrokeColor(gray);
+		bottomRight.setStrokeWeight(border);
+		super.addChild(bottomRight);
+		
+		bottom = new MTPolygon(new Vertex[] {
+			new Vertex( x+resizeMargin, y+height-border ),
+			new Vertex( x+width-resizeMargin, y+height-border )
+		}, app);
+		bottom.setNoFill(true);
+		bottom.setStrokeWeight(border);
+		bottom.setStrokeColor(gray);
+		super.addChild(bottom);
+		
+		bottomLeft = new MTPolygon(new Vertex[] {
+			new Vertex( x+resizeMargin, y+height-border ),
+			new Vertex( x, y+height-border ),
+			new Vertex( x, y+height-border-resizeMargin )
+		}, app);
+		bottomLeft.setNoFill(true);
+		bottomLeft.setStrokeColor(gray);
+		bottomLeft.setStrokeWeight(border);
+		super.addChild(bottomLeft);
+		
+		left = new MTPolygon(new Vertex[] {
+			new Vertex( x, y+resizeMargin ),
+			new Vertex( x, y+height-resizeMargin )
+		}, app);
+		left.setNoFill(true);
+		left.setStrokeWeight(border);
+		left.setStrokeColor(gray);
+		super.addChild(left);
 		
 		// set the title
 		this.setTitle(this.title);
@@ -128,6 +192,10 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		//Draw this component and its children above 
 		//everything previously drawn and avoid z-fighting //FIXME but we cant use 3D stuff in there then..
 		this.setDepthBufferDisabled(true);
+	}
+	
+	public void addChild(MTComponent child) {
+		this.contentArea.addChild(child);
 	}
 	
 	public void addConflictHandler(ICETConflictHandler handler) {
@@ -142,57 +210,6 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		for ( ICETConflictHandler handler : conflictHandlers ) {
 			handler.handleConflict(event);
 		}
-	}
-
-	/* (non-Javadoc)
-	 * @see org.mt4j.components.visibleComponents.AbstractVisibleComponent#preDraw(processing.core.PGraphics)
-	 */
-	@Override
-	public void preDraw(PGraphics graphics) {
-		this.savedNoStrokeSetting = this.isNoStroke();
-		super.preDraw(graphics);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.mt4j.components.visibleComponents.AbstractVisibleComponent#postDrawChildren(processing.core.PGraphics)
-	 */
-	@Override
-	public void postDrawChildren(PGraphics g) {
-		this.clip.disableClip(g);
-		
-		//Draw clipshape outline over all children to get an
-		//antialiased border
-		AbstractVisibleComponent clipShape = this.getChildClip().getClipShape();
-//		if (!clipShape.isNoStroke()){
-		if (this.drawInnerBorder){
-			clipShape.setNoFill(true);
-			clipShape.setNoStroke(false);
-				clipShape.drawComponent(g);
-			clipShape.setNoStroke(true);
-			clipShape.setNoFill(false);
-		}
-		
-		if (!savedNoStrokeSetting){
-			boolean noFillSetting = this.isNoFill();
-			this.setNoFill(true);
-			this.setNoStroke(false);
-			this.drawComponent(g);
-			this.setNoFill(noFillSetting);
-			this.setNoStroke(savedNoStrokeSetting);
-		}
-		
-		this.setChildClip(null);
-		super.postDrawChildren(g);
-		this.setChildClip(clip);
-	}
-	
-	/* (non-Javadoc)
-	 * @see org.mt4j.components.visibleComponents.shapes.AbstractShape#setStrokeColor(org.mt4j.util.MTColor)
-	 */
-	@Override
-	public void setStrokeColor(MTColor strokeColor) {
-		super.setStrokeColor(strokeColor);
-		this.clip.getClipShape().setStrokeColor(strokeColor); //FIXME wtf? not needed!?
 	}
 
 	public void setTitle(String title) {
@@ -211,7 +228,7 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 			
 			this.dragConflictListener = new DragConflictListener(this, this, app);
 			this.titleTextArea.addInputListener(dragConflictListener);
-			this.addChild(this.titleTextArea);
+			super.addChild(this.titleTextArea);
 		}
 		
 		this.titleTextArea.setText(this.title);
