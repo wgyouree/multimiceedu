@@ -6,7 +6,7 @@ import java.util.TimerTask;
 import org.mt4j.components.MTComponent;
 import org.mt4j.util.math.Vector3D;
 
-public class Animator extends TimerTask {
+public class Animator {
 
 	private MTComponent component;
 	private Integer timeouts[];
@@ -22,13 +22,21 @@ public class Animator extends TimerTask {
 	}
 	
 	public void start() {
-		timer.schedule(this, 0);
+		step();
 	}
 	
-	public void run() {
+	public void step() {
 		if ( pos < timeouts.length && pos < vectors.length ) {
+			System.out.println("Animator stepping... " + (timeouts.length - pos) + " steps remaining");
+			final Animator animator = this;
 			component.translateGlobal(vectors[pos]);
-			timer.schedule(this, pos++);
+			timer.schedule(new TimerTask() {
+				
+				@Override
+				public void run() {
+					animator.step();
+				}
+			}, pos++);
 		}
 		else {
 			this.destroy();
