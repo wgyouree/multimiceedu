@@ -52,7 +52,7 @@ import org.mt4j.util.animation.AnimationManager;
 import org.mt4j.util.math.Tools3D;
 import org.mt4j.util.opengl.GLFBO;
 
-import cet.globalMultiMiceManager.MultipleMiceManager;
+import cet.globalMultiMiceManager.CETMultipleMiceManager;
 
 import processing.core.PApplet;
 
@@ -105,7 +105,7 @@ public abstract class MTApplication extends PApplet {
 	private Iscene currentScene;
 	
 	/** CET multiple mice manager */
-	private MultipleMiceManager cetMiceManager;
+	private CETMultipleMiceManager cetMiceManager;
 	
 	/** The animation mgr. */
 	private AnimationManager animMgr;
@@ -1009,7 +1009,7 @@ public abstract class MTApplication extends PApplet {
 	 * 
 	 * @param manager the CET multiple mice manager
 	 */
-	public void addCETMultiMiceManager( MultipleMiceManager manager ){
+	public void addCETMultiMiceManager( CETMultipleMiceManager manager ){
 		cetMiceManager = manager;
 	}
 	
@@ -1109,7 +1109,7 @@ public abstract class MTApplication extends PApplet {
 	 * 
 	 * @return the CET multiple mice manager
 	 */
-	public MultipleMiceManager getCETMultiMiceManager(){
+	public CETMultipleMiceManager getCETMultiMiceManager(){
 		return cetMiceManager;
 	}
 	
