@@ -31,6 +31,7 @@ import org.mt4j.util.math.Vector3D;
 import processing.core.PGraphics;
 import processing.opengl.PGraphicsOpenGL;
 
+import cet.componentMultiMiceManager.CETcomponentMultiMiceControl;
 import cet.globalMultiMiceManager.CETConflictEvent;
 import cet.globalMultiMiceManager.CETConflictType;
 import cet.globalMultiMiceManager.ICETConflictHandler;
@@ -60,6 +61,8 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 	
 	private MTApplication app;
 	
+	private CETcomponentMultiMiceControl floorControl;
+	
 	private float width;
 	private float height;
 	
@@ -87,6 +90,9 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		this.app = applet;
 		this.width = width;
 		this.height = height;
+		
+		// Register Floor Controls for this component
+		this.floorControl = new CETcomponentMultiMiceControl(app.getCETMultiMiceManager());
 		
 		//Create inner children clip shape
 		float border = 1;

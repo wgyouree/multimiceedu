@@ -19,6 +19,7 @@ public class CETcomponentMultiMiceControl implements ICETMiceChangeListener{
 	
 	public CETcomponentMultiMiceControl( CETMultipleMiceManager m ){
 		globalMMmanager = m;
+		m.addMultiMiceChangeListener(this);
 		studentDeviceList = new ArrayList<Integer>();
 		isCollaborative = false;
 		addAllStudentDevices();
