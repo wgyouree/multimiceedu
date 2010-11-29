@@ -105,14 +105,14 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		
 		//Add window background
 		this.border = resizeWidth/2;
-		this.contentArea = new ClippedRectangle(border, titleBarHeight+border, z, width-(2*border), height-titleBarHeight-(2*border), applet);
+		this.contentArea = new ClippedRectangle(x+border, y+titleBarHeight+border, z, width-(2*border), height-titleBarHeight-(2*border), applet);
 		this.contentArea.setFillColor(new MTColor(200,200,200,255));
 		this.contentArea.setNoStroke(true);
 		this.contentArea.setPickable(false);
 		super.addChild(this.contentArea);
 		
 		// add title bar
-		this.titleBar = new MTRectangle(0+border, 0+border, width-(2*border), titleBarHeight, applet);
+		this.titleBar = new MTRectangle(x+border, y+border, width-(2*border), titleBarHeight, applet);
 		titleBar.setFillColor(new MTColor(100,100,100,255));
 		titleBar.setNoStroke(true);
 		titleBar.setPickable(false);
@@ -229,31 +229,31 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		this.height = size.getHeight();
 		
 		this.setVertices(new Vertex[] {
-			new Vertex( 0, 0 ),
-			new Vertex( width, 0 ),
-			new Vertex( width, height ),
-			new Vertex( 0, height ),
-			new Vertex( 0, 0 )
+			new Vertex( x, y ),
+			new Vertex( x+width, y ),
+			new Vertex( x+width, y+height ),
+			new Vertex( x, y+height ),
+			new Vertex( x, y )
 		});
 		this.setNoStroke(true);
 		
 		this.contentArea.setVertices(new Vertex[] {
-			new Vertex( border, titleBarHeight + border ),
-			new Vertex( width - (2*border), titleBarHeight + border ),
-			new Vertex( width - (2*border), height - (2*border) ),
-			new Vertex( border, height - (2*border) ),
-			new Vertex( border, titleBarHeight + border)
+			new Vertex( x+border, y+titleBarHeight + border ),
+			new Vertex( x+width - (2*border), y+titleBarHeight + border ),
+			new Vertex( x+width - (2*border), y+height - (2*border) ),
+			new Vertex( x+border, y+height - (2*border) ),
+			new Vertex( x+border, y+titleBarHeight + border)
 		});
 		this.contentArea.setFillColor(new MTColor(200,200,200,255));
 		this.contentArea.setNoStroke(true);
 		this.contentArea.setPickable(false);
 		
 		this.titleBar.setVertices(new Vertex[] {
-			new Vertex( border, border ),
-			new Vertex( width - border, border ),
-			new Vertex( width - border, border + titleBarHeight),
-			new Vertex( border, border + titleBarHeight ),
-			new Vertex( border, border )
+			new Vertex( x+border, y+border ),
+			new Vertex( x+width - border, y+border ),
+			new Vertex( x+width - border, y+border + titleBarHeight),
+			new Vertex( x+border, y+border + titleBarHeight ),
+			new Vertex( x+border, y+border )
 		});
 		titleBar.setFillColor(new MTColor(100,100,100,255));
 		titleBar.setNoStroke(true);
@@ -370,7 +370,7 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 					white,  //Font fill color
 					white);	//Font outline color
 			//Create a textfield
-			this.titleTextArea = new MTTextArea(titleMarginLeft, titleMarginTop, this.width, titleBarHeight - (2*titleMarginTop), fontArial, this.app);
+			this.titleTextArea = new MTTextArea(x+titleMarginLeft, y+titleMarginTop, this.width, titleBarHeight - (2*titleMarginTop), fontArial, this.app);
 			this.titleTextArea.setNoStroke(true);
 			this.titleTextArea.setNoFill(true);
 			this.titleTextArea.removeAllGestureEventListeners();

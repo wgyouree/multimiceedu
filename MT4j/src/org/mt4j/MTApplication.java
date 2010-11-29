@@ -52,7 +52,10 @@ import org.mt4j.util.animation.AnimationManager;
 import org.mt4j.util.math.Tools3D;
 import org.mt4j.util.opengl.GLFBO;
 
+import cet.components.visibleComponents.widgets.CETWindow;
 import cet.globalMultiMiceManager.CETMultipleMiceManager;
+import cet.globalMultiMiceManager.occlusion.CETOcclusionManager;
+import cet.globalMultiMiceManager.occlusion.OcclusionPolicy;
 
 import processing.core.PApplet;
 
@@ -106,6 +109,9 @@ public abstract class MTApplication extends PApplet {
 	
 	/** CET multiple mice manager */
 	private CETMultipleMiceManager cetMiceManager;
+	
+	/** CET occlusion manager */
+	private CETOcclusionManager cetOcclusionManager;
 	
 	/** The animation mgr. */
 	private AnimationManager animMgr;
@@ -249,6 +255,8 @@ public abstract class MTApplication extends PApplet {
 		sceneStack = new ArrayDeque<Iscene>();
 		
 		sceneChangeLocked = false;
+		
+		cetOcclusionManager = CETOcclusionManager.getInstance();
 	}
 	
 	/**
@@ -1113,7 +1121,33 @@ public abstract class MTApplication extends PApplet {
 		return cetMiceManager;
 	}
 	
-
+	/**
+	 * Gets the CET occlusion manager.
+	 * 
+	 * @return the CET occlusion manager
+	 */
+	public CETOcclusionManager getCETOcclusionManager() {
+		return cetOcclusionManager;
+	}
+	
+	public CETWindow createNewWindow(float x, float y, float z, float width, float height) {
+		return createNewWindow(null, x, y, z, width, height);
+	}
+	
+	public CETWindow createNewWindow(String title, float x, float y, float z, float width, float height) {
+		return createNewWindow(title, x, y, z, width, height, OcclusionPolicy.NONE);
+	}
+	
+	public CETWindow createNewWindow(String title, float x, float y, float z, float width, float height, OcclusionPolicy policy) {
+		CETWindow retVal = new CETWindow(title, x, y, z, width, height, this);
+		cetOcclusionManager.registerWindow(retVal, policy);
+		return retVal;
+	}
+	
+	public boolean checkOcclusionPolicy(CETWindow window) {
+		return cetOcclusionManager.canMove(window);
+	}
+	
 	/**
 	 * Gets the input manager.
 	 * 
