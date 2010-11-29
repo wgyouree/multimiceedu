@@ -23,7 +23,9 @@ import java.util.WeakHashMap;
 
 import org.mt4j.MTApplication;
 import org.mt4j.components.MTCanvas;
+import org.mt4j.components.MTComponent;
 import org.mt4j.components.visibleComponents.shapes.MTEllipse;
+import org.mt4j.components.visibleComponents.widgets.MTOverlayContainer;
 import org.mt4j.input.inputData.ActiveCursorPool;
 import org.mt4j.input.inputData.InputCursor;
 import org.mt4j.input.inputData.MTFingerInputEvt;
@@ -75,6 +77,9 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 	/** The CET multiple mice manager */
 	private CETMultipleMiceManager cetMiceManager;
 	
+	/** The overlay group. */
+	private MTComponent overlayGroup;
+	
 	/**
 	 * Instantiates a new multiple mice input source.
 	 * 
@@ -108,6 +113,8 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 		defaultCenterCam = new MTCamera(applet);
 		
 		currentScene = null;
+		
+		overlayGroup = new MTOverlayContainer(app, "Cursor group");
 	}
 	
 	/**
@@ -202,7 +209,8 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 						try {
 							if (deviceInfo.getCursorIcon() != null){
 								if (mtApp != null){
-									mtApp.getCurrentScene().getCanvas().removeChild(deviceInfo.getCursorIcon());
+								//	mtApp.getCurrentScene().getCanvas().removeChild(deviceInfo.getCursorIcon());
+									overlayGroup.removeChild(deviceInfo.getCursorIcon());
 								}
 							}
 							this.deviceToMouseInfo.remove(event.device);
@@ -262,6 +270,8 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 		MTCanvas oldCanvas = lastScene.getCanvas();
 		MTCanvas newCanvas = newScene.getCanvas();
 		currentScene = newScene;
+		oldCanvas.removeChild( overlayGroup );
+		newCanvas.addChild( overlayGroup );
 		
 		System.out.println("Removing multiple mice cursors from old and add to new canvas.");
 		Collection<MouseInfo> mouseInfos = deviceToMouseInfo.values();
@@ -269,13 +279,14 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 			MouseInfo mouseInfo = (MouseInfo) iter.next();
 			if (mouseInfo.getCursorIcon() != null){
 				mouseInfo.updateCursorIconOnSceneChange(currentScene);
+				/*
 				try {
 					oldCanvas.removeChild(mouseInfo.getCursorIcon());
 				} catch (Exception e) {
 					e.printStackTrace();
 				}finally{
 					newCanvas.addChild(mouseInfo.getCursorIcon());
-				}
+				}*/
 //				mouseInfo.ellipse.setCustomAndGlobalCam(currentScene.getSceneCam(), defaultCenterCam);
 				mouseInfo.getCursorIcon().attachCamera(defaultCenterCam);
 			}
@@ -329,8 +340,10 @@ public class MultipleMiceInputSource extends AbstractInputSource {
 			try {
 				if (mtApp != null && currentScene != null){
 					//TODO camera fehler manchmal? 
-					currentScene.getCanvas().removeChild(mouseInfo.getCursorIcon());
-					currentScene.getCanvas().addChild(mouseInfo.getCursorIcon());
+//					currentScene.getCanvas().removeChild(mouseInfo.getCursorIcon());
+//					currentScene.getCanvas().addChild(mouseInfo.getCursorIcon());
+					overlayGroup.removeChild(mouseInfo.getCursorIcon());
+					overlayGroup.addChild(mouseInfo.getCursorIcon());
 //					//Draw circles ontop
 //					MTCanvas canvas = mtApp.getCurrentScene().getMainCanvas();
 //					canvas.removeChild(mouseInfo.ellipse);
