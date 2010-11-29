@@ -50,6 +50,8 @@ import org.mt4j.util.math.Ray;
 import org.mt4j.util.math.Tools3D;
 import org.mt4j.util.math.Vector3D;
 
+import cet.componentMultiMiceManager.CETcomponentMultiMiceControl;
+
 import processing.core.PApplet;
 import processing.core.PGraphics;
 import processing.core.PGraphics3D;
@@ -3120,5 +3122,5 @@ public class MTComponent implements IMTComponent3D, IMTInputEventListener, IGest
 	public String toString() {
 		return "\"" + this.getName() + "\"" + " [" + super.toString() + "]";
 	}
-		
+
 }

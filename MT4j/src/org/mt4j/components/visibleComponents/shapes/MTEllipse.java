@@ -49,6 +49,10 @@ public class MTEllipse extends MTPolygon {
 
 	private int segments;
 	
+	public static final int cord = 0;
+	public static final int pie = 1;
+	private int arcMode = cord;
+	
 	/**
 	 * Instantiates a new mT ellipse.
 	 * 
@@ -71,13 +75,18 @@ public class MTEllipse extends MTPolygon {
 	 * @param segments the segments
 	 */
 	public MTEllipse(PApplet pApplet, Vector3D centerPoint, float radiusX, float radiusY, int segments) {
+		this(pApplet, centerPoint, radiusX, radiusY, 0, (float)Math.toRadians(360), segments, cord);
+	}
+	
+	public MTEllipse(PApplet pApplet, Vector3D centerPoint, float radiusX, float radiusY, float t, float d, int segments, int m) {
 		super(new Vertex[0], pApplet);
 		this.radiusX 		= radiusX;
 		this.radiusY 		= radiusY;
 		this.centerPoint 	= centerPoint;
 		this.segments = segments;
-		theta = 0.0f;
-		degrees = (float)Math.toRadians(360);
+		theta = t;
+		degrees = d;
+		arcMode = m;
 		
 		this.setStrokeWeight(1);
 		this.setNoFill(false);
@@ -137,7 +146,11 @@ public class MTEllipse extends MTPolygon {
 	 * @return the vertices
 	 */
 	protected Vertex[] getVertices(int resolution){
-		Vertex[] verts = new Vertex[resolution+1];
+		Vertex[] verts;
+		if( degrees < (float)Math.toRadians(360) && arcMode == pie) 
+			verts = new Vertex[resolution+2];
+		else
+			verts = new Vertex[resolution+1];
 		
 		float t;
 		float inc = degrees / (float)resolution;
@@ -160,6 +173,8 @@ public class MTEllipse extends MTPolygon {
 			
 			verts[i] = new Vertex(x, y, centerPoint.z, fillColor.getR(), fillColor.getG(), fillColor.getB(), fillColor.getAlpha());
 		}
+		if( degrees < (float)Math.toRadians(360) && arcMode == pie)
+			verts[verts.length-2] = new Vertex( centerPoint.x, centerPoint.y, centerPoint.z, fillColor.getR(), fillColor.getG(), fillColor.getB(), fillColor.getAlpha());
 		verts[verts.length-1] = (Vertex) verts[0].getCopy(); //NEED TO USE COPY BECAUSE TEX COORDS MAY GET SCALED DOUBLE IF SAME VERTEX OBJECT!
 //		System.out.println("Points: " + verts.length);
 		
@@ -244,6 +259,19 @@ public class MTEllipse extends MTPolygon {
 	}  
 	*/
 
-
+	public void setTheta(float t){
+		theta = t;
+	}
 	
+	public float getTheta() {
+		return theta;
+	}
+	
+	public void setArcMode(int m){
+		arcMode = m;
+	}
+	
+	public int getArcMode(){
+		return arcMode;
+	}
 }
