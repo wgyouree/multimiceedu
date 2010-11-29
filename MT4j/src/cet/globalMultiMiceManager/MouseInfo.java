@@ -199,6 +199,10 @@ public class MouseInfo {
 		isButtonPressed = is;
 	}
 	
+	public int getDeviceNum() {
+		return device;
+	}
+	
 	public String getDeviceName(){
 		return deviceName;
 	}
