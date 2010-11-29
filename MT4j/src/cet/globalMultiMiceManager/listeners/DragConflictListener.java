@@ -8,6 +8,7 @@ import org.mt4j.input.inputData.InputCursor;
 import org.mt4j.input.inputData.MTInputEvent;
 import org.mt4j.util.math.Vector3D;
 
+import cet.components.visibleComponents.widgets.CETWindow;
 import cet.globalMultiMiceManager.ICETConflictListener;
 
 public class DragConflictListener extends AbstractConflictListener {
@@ -20,29 +21,33 @@ public class DragConflictListener extends AbstractConflictListener {
 	}
 	
 	public void inputDetected(MTInputEvent inEvt) {
-		AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
-		InputCursor cursor = cursorInputEvt.getCursor();
-		IMTComponent3D target = component;
-		Vector3D vector = new Vector3D(cursor.getCurrentEvtPosX(), cursor.getCurrentEvtPosY());
-		//Put target on top -> draw on top of others
-		if (target instanceof MTComponent){
-			MTComponent baseComp = (MTComponent)target;
-			baseComp.sendToFront();
+		if ( !(component instanceof CETWindow) || app.checkOcclusionPolicy((CETWindow)component) ) {
+			AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
+			InputCursor cursor = cursorInputEvt.getCursor();
+			IMTComponent3D target = component;
+			Vector3D vector = new Vector3D(cursor.getCurrentEvtPosX(), cursor.getCurrentEvtPosY());
+			//Put target on top -> draw on top of others
+			if (target instanceof MTComponent){
+				MTComponent baseComp = (MTComponent)target;
+				baseComp.sendToFront();
+			}
+			previousPos = vector;
 		}
-		previousPos = vector;
 	}
 	
 	public void inputUpdated(MTInputEvent inEvt) {
-		AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
-		InputCursor cursor = cursorInputEvt.getCursor();
-		IMTComponent3D target = component;
-		Vector3D vector = new Vector3D(cursor.getCurrentEvtPosX(), cursor.getCurrentEvtPosY());
-		Vector3D translation = new Vector3D(
-			vector.x - previousPos.x,
-			vector.y - previousPos.y
-		);
-		previousPos = vector;
-		target.translateGlobal(translation);
+		if ( !(component instanceof CETWindow) || app.checkOcclusionPolicy((CETWindow)component) ) {
+			AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
+			InputCursor cursor = cursorInputEvt.getCursor();
+			IMTComponent3D target = component;
+			Vector3D vector = new Vector3D(cursor.getCurrentEvtPosX(), cursor.getCurrentEvtPosY());
+			Vector3D translation = new Vector3D(
+				vector.x - previousPos.x,
+				vector.y - previousPos.y
+			);
+			previousPos = vector;
+			target.translateGlobal(translation);
+		}
 	}
 
 	public void inputEnded(MTInputEvent inEvt) {
