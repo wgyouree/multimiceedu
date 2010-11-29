@@ -48,7 +48,7 @@ public class ScaleConflictListener extends AbstractConflictListener {
 	}
 	
 	public void inputUpdated(MTInputEvent inEvt) {
-		if ( !app.checkOcclusionPolicy(window) ) {
+		if ( app.checkOcclusionPolicy(window) ) {
 			AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
 			InputCursor cursor = cursorInputEvt.getCursor();
 			Vector3D vector = new Vector3D(cursor.getCurrentEvtPosX(), cursor.getCurrentEvtPosY());
