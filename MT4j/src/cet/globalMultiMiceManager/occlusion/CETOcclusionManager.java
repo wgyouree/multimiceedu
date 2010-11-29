@@ -33,15 +33,18 @@ public class CETOcclusionManager {
 		
 		// find overlapping windows and check policies
 		for ( CETWindow aWindow : windows.keySet() ) {
-			IBoundingShape b2 = aWindow.getBounds();
-			Vector3D[] b1Vectors = b1.getVectorsGlobal();
-			Vector3D[] b2Vectors = b2.getVectorsGlobal();
-			Vector3D[] overlap = getOverlap(b1Vectors, b2Vectors);
-			if ( overlap != null ) {
-				// we have overlap, determine policy
-				OcclusionPolicy policy = determinePolicy(window, aWindow);
-				if ( policy == OcclusionPolicy.PREVENT ) {
-					return false;
+			if ( !(window.equals(aWindow)) ) {
+				IBoundingShape b2 = aWindow.getBounds();
+				Vector3D[] b1Vectors = b1.getVectorsGlobal();
+				Vector3D[] b2Vectors = b2.getVectorsGlobal();
+				Vector3D[] overlap = getOverlap(b1Vectors, b2Vectors);
+				if ( overlap != null ) {
+					// we have overlap, determine policy
+					OcclusionPolicy policy = determinePolicy(window, aWindow);
+					if ( policy == OcclusionPolicy.PREVENT ) {
+						System.out.println("Prevented from moving");
+						return false;
+					}
 				}
 			}
 		}
@@ -57,10 +60,14 @@ public class CETOcclusionManager {
 		Vector3D br1 = v1[2];
 		Vector3D bl1 = v1[3];
 		
+		System.out.println("Box 1: TL: " + tl1.x + "," + tl1.y + " TR: " + tr1.x + "," + tr1.y + " BL: " + bl1.x + "," + bl1.y + " BR: " + br1.x + "," + br1.y);
+		
 		Vector3D tl2 = v2[0];
 		Vector3D tr2 = v2[1];
 		Vector3D br2 = v2[2];
 		Vector3D bl2 = v2[3];
+		
+		System.out.println("Box 2: TL: " + tl2.x + "," + tl2.y + " TR: " + tr2.x + "," + tr2.y + " BL: " + bl2.x + "," + bl2.y + " BR: " + br2.x + "," + br2.y);
 		
 		boolean tlInside = false;
 		boolean trInside = false;
@@ -71,20 +78,24 @@ public class CETOcclusionManager {
 		
 		// determine if any of the corners are inside
 		if ( tl1.x <= tl2.x && tl1.y <= tl2.y && br1.x >= tl2.x && br1.y >= tl2.y ) {
+			System.out.println("Situation 1");
 			tlInside = true;
 		}
 		if ( bl2.x <= bl1.x && bl2.y >= bl1.y && tr2.x >= bl1.x && tr2.y <= br1.y ) {
+			System.out.println("Situation 2");
 			trInside = true;
 		}
 		if ( tl2.x <= tl1.x && tl2.y <= tl1.y && br2.x >= tl1.x && br2.y >= tl1.y ) {
+			System.out.println("Situation 3");
 			brInside = true;
 		}
 		if ( bl1.x <= bl2.x && bl1.y >= bl2.y && tr1.x >= bl2.x && tr1.y <= bl2.y ) {
+			System.out.println("Situation 4");
 			blInside = true;
 		}
 		
 		if ( tlInside || trInside || brInside || blInside ) {
-			
+			return new Vector3D[] {};
 		}
 		
 		return null;

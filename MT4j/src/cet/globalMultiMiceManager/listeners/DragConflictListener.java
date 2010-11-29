@@ -21,7 +21,7 @@ public class DragConflictListener extends AbstractConflictListener {
 	}
 	
 	public void inputDetected(MTInputEvent inEvt) {
-		if ( !(component instanceof CETWindow) || app.checkOcclusionPolicy((CETWindow)component) ) {
+		//if ( !(component instanceof CETWindow) || app.checkOcclusionPolicy((CETWindow)component) ) {
 			AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
 			InputCursor cursor = cursorInputEvt.getCursor();
 			IMTComponent3D target = component;
@@ -32,20 +32,23 @@ public class DragConflictListener extends AbstractConflictListener {
 				baseComp.sendToFront();
 			}
 			previousPos = vector;
-		}
+		//}
 	}
 	
 	public void inputUpdated(MTInputEvent inEvt) {
-		if ( !(component instanceof CETWindow) || app.checkOcclusionPolicy((CETWindow)component) ) {
-			AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
-			InputCursor cursor = cursorInputEvt.getCursor();
-			IMTComponent3D target = component;
-			Vector3D vector = new Vector3D(cursor.getCurrentEvtPosX(), cursor.getCurrentEvtPosY());
-			Vector3D translation = new Vector3D(
-				vector.x - previousPos.x,
-				vector.y - previousPos.y
-			);
-			previousPos = vector;
+		AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
+		InputCursor cursor = cursorInputEvt.getCursor();
+		IMTComponent3D target = component;
+		Vector3D vector = new Vector3D(cursor.getCurrentEvtPosX(), cursor.getCurrentEvtPosY());
+		Vector3D translation = new Vector3D(
+			vector.x - previousPos.x,
+			vector.y - previousPos.y
+		);
+		previousPos = vector;
+		target.translateGlobal(translation);
+		if ( component instanceof CETWindow && !app.checkOcclusionPolicy((CETWindow)component) ) {
+			translation.x = -1 * translation.x;
+			translation.y = -1 * translation.y;
 			target.translateGlobal(translation);
 		}
 	}
