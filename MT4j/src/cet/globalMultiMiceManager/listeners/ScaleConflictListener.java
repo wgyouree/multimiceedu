@@ -2,6 +2,7 @@ package cet.globalMultiMiceManager.listeners;
 
 import org.mt4j.MTApplication;
 import org.mt4j.components.MTComponent;
+import org.mt4j.components.TransformSpace;
 import org.mt4j.components.interfaces.IMTComponent3D;
 import org.mt4j.input.inputData.AbstractCursorInputEvt;
 import org.mt4j.input.inputData.InputCursor;
@@ -9,7 +10,9 @@ import org.mt4j.input.inputData.MTInputEvent;
 import org.mt4j.input.inputSources.MultipleMiceInputSource;
 import org.mt4j.util.math.Vector3D;
 
+import cet.components.visibleComponents.widgets.CETWindow;
 import cet.globalMultiMiceManager.ICETConflictListener;
+import cet.globalMultiMiceManager.Size;
 import cet.globalMultiMiceManager.cursors.CursorType;
 
 public class ScaleConflictListener extends AbstractConflictListener {
@@ -19,20 +22,27 @@ public class ScaleConflictListener extends AbstractConflictListener {
 	
 	private CursorType type;
 	
-	public ScaleConflictListener(CursorType type, ICETConflictListener listener, MTComponent component, MTApplication app) {
+	private float lastScaleDistance = 1.0f;
+	
+	private CETWindow window;
+	
+	public ScaleConflictListener(CursorType type, ICETConflictListener listener, CETWindow component, MTApplication app) {
 		super(listener, component, app);
 		this.type = type;
+		this.window = component;
 	}
 	
 	public void inputDetected(MTInputEvent inEvt) {
 		AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
 		InputCursor cursor = cursorInputEvt.getCursor();
+		/*
 		if( inEvt.getSource() instanceof MultipleMiceInputSource ) {
 			int device = ((MultipleMiceInputSource) inEvt.getSource() ).getEventSourceDevice();
 			app.getCETMultiMiceManager().getMouseInfo(device).useCursorIcon(
 				type, app, app.getCurrentScene(), app.getCurrentScene().getSceneCam()
 			);
 		}
+		*/
 		IMTComponent3D target = component;
 		Vector3D vector = new Vector3D(cursor.getCurrentEvtPosX(), cursor.getCurrentEvtPosY());
 		//Put target on top -> draw on top of others
@@ -46,15 +56,22 @@ public class ScaleConflictListener extends AbstractConflictListener {
 	public void inputUpdated(MTInputEvent inEvt) {
 		AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
 		InputCursor cursor = cursorInputEvt.getCursor();
-		IMTComponent3D target = component;
 		Vector3D vector = new Vector3D(cursor.getCurrentEvtPosX(), cursor.getCurrentEvtPosY());
+		float deltaX = vector.x - previousPos.x;
+		float deltaY = vector.y - previousPos.y;
+		float deltaWidth = window.getWidth() + (-1 * deltaX);
+		float deltaHeight = window.getHeight() + (-1 * deltaY);
 		switch ( type ) {
 		case TOP_LEFT:
-			target.scaleGlobal(
-				vector.x - previousPos.x,
-				vector.y - previousPos.y,
-				0,
-				vector
+			Vector3D translation = new Vector3D(
+				deltaX,
+				deltaY
+			);
+			previousPos = vector;
+			window.translateGlobal(translation);
+			window.setSize(new Size(
+				deltaWidth,
+				deltaHeight)
 			);
 			break;
 		case TOP:
@@ -75,18 +92,15 @@ public class ScaleConflictListener extends AbstractConflictListener {
 			System.err.println("Unrecognzied CursorType");
 			break;
 		}
-		Vector3D translation = new Vector3D(
-			vector.x - previousPos.x,
-			vector.y - previousPos.y
-		);
-		previousPos = vector;
-		target.translateGlobal(translation);
 	}
 
 	public void inputEnded(MTInputEvent inEvt) {
 		previousPos = null;
+		lastScaleDistance = 1.0f;
+		/*
 		app.getCETMultiMiceManager().getMouseInfo(device).useCursorIcon(
 			CursorType.ARROW, app, app.getCurrentScene(), app.getCurrentScene().getSceneCam()
 		);
+		*/
 	}
 }
