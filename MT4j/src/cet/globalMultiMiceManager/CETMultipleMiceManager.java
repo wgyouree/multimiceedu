@@ -78,4 +78,8 @@ public class CETMultipleMiceManager {
 	public ArrayList<ICETMiceChangeListener> getMultiMiceChangeListeners() {
 		return listenerList;
 	}
+	
+	public int getMiceNumber(){
+		return deviceToMouseInfo.keySet().size();
+	}
 }
