@@ -53,7 +53,7 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 	private static final float titleMarginTop = 5;
 	private static final int titleFontSize = 12;
 	private static final float resizeMargin = 15;
-	private static final float resizeWidth = 1;
+	private static final float resizeWidth = 10;
 	
 	private String title = "Window";
 	private MTTextArea titleTextArea;
@@ -74,13 +74,13 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 	
 	// border, for resizing
 	private MTPolygon topLeft;
-	private MTPolygon top;
+	//private MTPolygon top;
 	private MTPolygon topRight;
-	private MTPolygon right;
+	//private MTPolygon right;
 	private MTPolygon bottomRight;
-	private MTPolygon bottom;
+	//private MTPolygon bottom;
 	private MTPolygon bottomLeft;
-	private MTPolygon left;
+	//private MTPolygon left;
 	
 	// conflict listeners
 	private DragConflictListener dragConflictListener;
@@ -104,7 +104,7 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		this.floorControl = new CETcomponentMultiMiceControl(app.getCETMultiMiceManager());
 		
 		//Add window background
-		this.border = resizeWidth;
+		this.border = resizeWidth/2;
 		this.contentArea = new ClippedRectangle(border, titleBarHeight+border, z, width-(2*border), height-titleBarHeight-(2*border), applet);
 		this.contentArea.setFillColor(new MTColor(200,200,200,255));
 		this.contentArea.setNoStroke(true);
@@ -127,22 +127,22 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		}, app);
 		topLeft.setNoFill(true);
 		topLeft.setStrokeColor(gray);
-		topLeft.setStrokeWeight(border);
+		topLeft.setStrokeWeight(resizeWidth);
 		topLeft.removeAllGestureEventListeners();
 		topLeft.addInputListener(new ScaleConflictListener(CursorType.TOP_LEFT, this, this, app));
 		super.addChild(topLeft);
-		
+		/*
 		top = new MTPolygon(new Vertex[] {
 			new Vertex( x+resizeMargin, y ),
 			new Vertex( x+width-resizeMargin, y )
 		}, app);
 		top.setNoFill(true);
-		top.setStrokeWeight(border);
+		top.setStrokeWeight(resizeWidth);
 		top.setStrokeColor(gray);
 		top.removeAllGestureEventListeners();
 		top.addInputListener(new ScaleConflictListener(CursorType.TOP, this, this, app));
 		super.addChild(top);
-		
+		*/
 		topRight = new MTPolygon(new Vertex[] {
 			new Vertex( x+width-resizeMargin, y ),
 			new Vertex( x+width, y ),
@@ -150,66 +150,68 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		}, app);
 		topRight.setNoFill(true);
 		topRight.setStrokeColor(gray);
-		topRight.setStrokeWeight(border);
+		topRight.setStrokeWeight(resizeWidth);
 		topRight.removeAllGestureEventListeners();
 		topRight.addInputListener(new ScaleConflictListener(CursorType.TOP_RIGHT, this, this, app));
 		super.addChild(topRight);
-		
+		/*
 		right = new MTPolygon(new Vertex[] {
 			new Vertex( x+width, y+resizeMargin ),
 			new Vertex( x+width, y+height-resizeMargin )
 		}, app);
 		right.setNoFill(true);
-		right.setStrokeWeight(border);
+		right.setStrokeWeight(resizeWidth);
 		right.setStrokeColor(gray);
 		right.removeAllGestureEventListeners();
 		right.addInputListener(new ScaleConflictListener(CursorType.RIGHT, this, this, app));
 		super.addChild(right);
-		
+		*/
 		bottomRight = new MTPolygon(new Vertex[] {
 			new Vertex( x+width, y+height-resizeMargin ),
-			new Vertex( x+width, y+height-border ),
-			new Vertex( x+width-resizeMargin, y+height-border )
+			new Vertex( x+width, y+height ),
+			new Vertex( x+width-resizeMargin, y+height )
 		}, app);
 		bottomRight.setNoFill(true);
 		bottomRight.setStrokeColor(gray);
-		bottomRight.setStrokeWeight(border);
+		bottomRight.setStrokeWeight(resizeWidth);
 		bottomRight.removeAllGestureEventListeners();
 		bottomRight.addInputListener(new ScaleConflictListener(CursorType.BOTTOM_RIGHT, this, this, app));
 		super.addChild(bottomRight);
-		
+		/*
 		bottom = new MTPolygon(new Vertex[] {
 			new Vertex( x+resizeMargin, y+height-border ),
 			new Vertex( x+width-resizeMargin, y+height-border )
 		}, app);
 		bottom.setNoFill(true);
-		bottom.setStrokeWeight(border);
+		bottom.setStrokeWeight(resizeWidth);
 		bottom.setStrokeColor(gray);
 		bottom.removeAllGestureEventListeners();
 		bottom.addInputListener(new ScaleConflictListener(CursorType.BOTTOM, this, this, app));
 		super.addChild(bottom);
-		
+		*/
 		bottomLeft = new MTPolygon(new Vertex[] {
-			new Vertex( x+resizeMargin, y+height-border ),
-			new Vertex( x, y+height-border ),
-			new Vertex( x, y+height-border-resizeMargin )
+			new Vertex( x+resizeMargin, y+height ),
+			new Vertex( x, y+height ),
+			new Vertex( x, y+height-resizeMargin )
 		}, app);
 		bottomLeft.setNoFill(true);
 		bottomLeft.setStrokeColor(gray);
-		bottomLeft.setStrokeWeight(border);
+		bottomLeft.setStrokeWeight(resizeWidth);
 		bottomLeft.removeAllGestureEventListeners();
 		bottomLeft.addInputListener(new ScaleConflictListener(CursorType.BOTTOM_LEFT, this, this, app));
 		super.addChild(bottomLeft);
-		
+		/*
 		left = new MTPolygon(new Vertex[] {
 			new Vertex( x, y+resizeMargin ),
 			new Vertex( x, y+height-resizeMargin )
 		}, app);
 		left.setNoFill(true);
-		left.setStrokeWeight(border);
+		left.setStrokeWeight(resizeWidth);
 		left.setStrokeColor(gray);
+		bottomLeft.removeAllGestureEventListeners();
+		left.addInputListener(new ScaleConflictListener(CursorType.LEFT, this, this, app));
 		super.addChild(left);
-		
+		*/
 		// set the title
 		this.setTitle(this.title);
 		
@@ -256,7 +258,7 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		titleBar.setFillColor(new MTColor(100,100,100,255));
 		titleBar.setNoStroke(true);
 		titleBar.setPickable(false);
-
+		
 		MTColor gray = new MTColor(139, 137, 137);
 		
 		topLeft.setVertices(new Vertex[] {
@@ -266,16 +268,16 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		});
 		topLeft.setNoFill(true);
 		topLeft.setStrokeColor(gray);
-		topLeft.setStrokeWeight(border);
-		
+		topLeft.setStrokeWeight(resizeWidth);
+		/*
 		top.setVertices(new Vertex[] {
 			new Vertex( x+resizeMargin, y ),
 			new Vertex( x+width-resizeMargin, y )
 		});
 		top.setNoFill(true);
 		top.setStrokeColor(gray);
-		top.setStrokeWeight(border);
-		
+		top.setStrokeWeight(resizeWidth);
+		*/
 		topRight.setVertices(new Vertex[] {
 			new Vertex( x+width-resizeMargin, y ),
 			new Vertex( x+width, y ),
@@ -283,49 +285,50 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		});
 		topRight.setNoFill(true);
 		topRight.setStrokeColor(gray);
-		topRight.setStrokeWeight(border);
-		
+		topRight.setStrokeWeight(resizeWidth);
+		/*
 		right.setVertices(new Vertex[] {
 			new Vertex( x+width, y+resizeMargin ),
 			new Vertex( x+width, y+height-resizeMargin )
 		});
 		right.setNoFill(true);
 		right.setStrokeColor(gray);
-		right.setStrokeWeight(border);
-		
+		right.setStrokeWeight(resizeWidth);
+		*/
 		bottomRight.setVertices(new Vertex[] {
 			new Vertex( x+width, y+height-resizeMargin ),
-			new Vertex( x+width, y+height-border ),
-			new Vertex( x+width-resizeMargin, y+height-border )
+			new Vertex( x+width, y+height ),
+			new Vertex( x+width-resizeMargin, y+height )
 		});
 		bottomRight.setNoFill(true);
 		bottomRight.setStrokeColor(gray);
-		bottomRight.setStrokeWeight(border);
-		
+		bottomRight.setStrokeWeight(resizeWidth);
+		/*
 		bottom.setVertices(new Vertex[] {
 			new Vertex( x+resizeMargin, y+height-border ),
 			new Vertex( x+width-resizeMargin, y+height-border )
 		});
 		bottom.setNoFill(true);
 		bottom.setStrokeColor(gray);
-		bottom.setStrokeWeight(border);
-		
+		bottom.setStrokeWeight(resizeWidth);
+		*/
 		bottomLeft.setVertices(new Vertex[] {
-			new Vertex( x+resizeMargin, y+height-border ),
-			new Vertex( x, y+height-border ),
-			new Vertex( x, y+height-border-resizeMargin )
+			new Vertex( x+resizeMargin, y+height ),
+			new Vertex( x, y+height ),
+			new Vertex( x, y+height-resizeMargin )
 		});
 		bottomLeft.setNoFill(true);
 		bottomLeft.setStrokeColor(gray);
-		bottomLeft.setStrokeWeight(border);
-		
+		bottomLeft.setStrokeWeight(resizeWidth);
+		/*
 		left.setVertices(new Vertex[] {
 			new Vertex( x, y+resizeMargin ),
 			new Vertex( x, y+height-resizeMargin )
 		});
 		left.setNoFill(true);
 		left.setStrokeColor(gray);
-		left.setStrokeWeight(border);
+		left.setStrokeWeight(resizeWidth);
+		*/
 	}
 	
 	public Size getSize() {
