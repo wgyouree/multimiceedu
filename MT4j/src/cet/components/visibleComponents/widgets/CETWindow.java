@@ -34,6 +34,7 @@ import processing.core.PGraphics;
 import processing.opengl.PGraphicsOpenGL;
 
 import cet.componentMultiMiceManager.CETcomponentMultiMiceControl;
+import cet.componentMultiMiceManager.CETcomponentMultiMiceControlUI;
 import cet.globalMultiMiceManager.CETConflictEvent;
 import cet.globalMultiMiceManager.CETConflictType;
 import cet.globalMultiMiceManager.ICETConflictHandler;
@@ -63,6 +64,7 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 	private MTApplication app;
 	
 	private CETcomponentMultiMiceControl floorControl;
+	private CETcomponentMultiMiceControlUI floorControlUI;
 	
 	private float width;
 	private float height;
@@ -100,23 +102,28 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		this.y = y;
 		this.setNoStroke(true);
 		
-		// Register Floor Controls for this component
-		this.floorControl = new CETcomponentMultiMiceControl(app.getCETMultiMiceManager());
-		
 		//Add window background
 		this.border = resizeWidth/2;
-		this.contentArea = new ClippedRectangle(x+border, y+titleBarHeight+border, z, width-(2*border), height-titleBarHeight-(2*border), applet);
+		this.contentArea = new ClippedRectangle(border, titleBarHeight+border, z, width-(2*border), height-titleBarHeight-(2*border), applet);
 		this.contentArea.setFillColor(new MTColor(200,200,200,255));
 		this.contentArea.setNoStroke(true);
 		this.contentArea.setPickable(false);
 		super.addChild(this.contentArea);
 		
 		// add title bar
-		this.titleBar = new MTRectangle(x+border, y+border, width-(2*border), titleBarHeight, applet);
+		this.titleBar = new MTRectangle(0+border, 0+border, width-(2*border), titleBarHeight, applet);
 		titleBar.setFillColor(new MTColor(100,100,100,255));
 		titleBar.setNoStroke(true);
 		titleBar.setPickable(false);
 		super.addChild(titleBar);
+		
+		// Register Floor Controls for this component and create UI over title Bar
+		if( app.getCETMultiMiceManager() != null ) {
+			this.floorControl = new CETcomponentMultiMiceControl(app.getCETMultiMiceManager());
+			this.floorControlUI = this.floorControl.createUI( (int)(titleMarginLeft + titleBarHeight/2), (int)(titleMarginTop + titleBarHeight/2), applet);
+			super.addChild( floorControlUI );
+			floorControlUI.sendToFront();
+		}
 		
 		// draw resize border
 		MTColor gray = new MTColor(139, 137, 137);
@@ -258,7 +265,7 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		titleBar.setFillColor(new MTColor(100,100,100,255));
 		titleBar.setNoStroke(true);
 		titleBar.setPickable(false);
-		
+				
 		MTColor gray = new MTColor(139, 137, 137);
 		
 		topLeft.setVertices(new Vertex[] {
@@ -370,7 +377,7 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 					white,  //Font fill color
 					white);	//Font outline color
 			//Create a textfield
-			this.titleTextArea = new MTTextArea(x+titleMarginLeft, y+titleMarginTop, this.width, titleBarHeight - (2*titleMarginTop), fontArial, this.app);
+			this.titleTextArea = new MTTextArea(titleMarginLeft + x + titleBarHeight, y + titleMarginTop, this.width - titleMarginLeft - titleBarHeight, titleBarHeight - (2*titleMarginTop), fontArial, this.app);
 			this.titleTextArea.setNoStroke(true);
 			this.titleTextArea.setNoFill(true);
 			this.titleTextArea.removeAllGestureEventListeners();
