@@ -45,6 +45,15 @@ public class CETOcclusionManager {
 						System.out.println("Prevented from moving");
 						return false;
 					}
+					else if ( policy == OcclusionPolicy.DEFER ) {
+						System.out.println("Deferring to windows");
+						window.addOverlap(aWindow, overlap);
+						aWindow.addOverlap(window, overlap);
+					}
+				}
+				else {
+					window.removeOverlap(aWindow);
+					aWindow.removeOverlap(window);
 				}
 			}
 		}
@@ -74,30 +83,230 @@ public class CETOcclusionManager {
 		boolean brInside = false;
 		boolean blInside = false;
 		
-		int containingBox = 1;
+		int count = 0;
 		
 		// determine if any of the corners are inside
 		if ( tl1.x <= tl2.x && tl1.y <= tl2.y && br1.x >= tl2.x && br1.y >= tl2.y ) {
 			System.out.println("Situation 1");
 			tlInside = true;
+			count++;
 		}
 		if ( bl2.x <= bl1.x && bl2.y >= bl1.y && tr2.x >= bl1.x && tr2.y <= br1.y ) {
 			System.out.println("Situation 2");
 			trInside = true;
+			count++;
 		}
 		if ( tl2.x <= tl1.x && tl2.y <= tl1.y && br2.x >= tl1.x && br2.y >= tl1.y ) {
 			System.out.println("Situation 3");
 			brInside = true;
+			count++;
 		}
 		if ( bl1.x <= bl2.x && bl1.y >= bl2.y && tr1.x >= bl2.x && tr1.y <= bl2.y ) {
 			System.out.println("Situation 4");
 			blInside = true;
+			count++;
 		}
 		
-		if ( tlInside || trInside || brInside || blInside ) {
-			return new Vector3D[] {};
+		// FIXME: this is a hack to get this working
+		//boolean tltr1Contains2 = false;
+		//boolean tltr2Contains1 = false;
+		if ( br1.x <= tr2.x && br1.y >= tr2.y && br1.x >= tl2.x && br1.y <= br2.y) {
+			//tltr2Contains1 = true;
+			if ( trInside ) {
+				// 2 contains 1
+				System.out.println("2 contains 1");
+				return new Vector3D[] {
+					new Vector3D(bl1.x, tl2.y),
+					new Vector3D(br1.x, tl2.y),
+					br1,
+					bl1
+				};
+			}
+		}
+		else if ( tr1.x <= tr2.x && tr1.y >= tr2.y && tr1.x >= bl2.x && tr1.y <= br2.y){
+			//tltr1Contains2 = true;
+			if ( brInside ) {
+				// 2 contains 1
+				return new Vector3D[] {
+					tl1,
+					tr1,
+					new Vector3D(tr1.x, br2.y),
+					new Vector3D(tl1.x, br2.y)
+				};
+			}
+		}
+		else if ( br2.x <= tr1.x && br2.y >= tr1.y && br2.x >= tl1.x && br2.y <= br1.y) {
+			//tltr2Contains1 = true;
+			if ( tlInside ) {
+				// 2 contains 1
+				System.out.println("2 contains 1");
+				return new Vector3D[] {
+					new Vector3D(bl2.x, tl1.y),
+					new Vector3D(br2.x, tl2.y),
+					br2,
+					bl2
+				};
+			}
+		}
+		else if ( tr2.x <= tr1.x && tr2.y >= tr1.y && tr2.x >= bl1.x && tr2.y <= br1.y){
+			//tltr1Contains2 = true;
+			if ( blInside ) {
+				// 2 contains 1
+				return new Vector3D[] {
+					tl2,
+					tr2,
+					new Vector3D(tr2.x, br1.y),
+					new Vector3D(tl2.x, br1.y)
+				};
+			}
+		}
+		// END HACK
+		
+		if ( count == 0 ) {
+			return null;
 		}
 		
+		else if ( count == 1 ) {
+			
+			if ( tlInside ) {
+				return new Vector3D[] {
+					tl2,
+					new Vector3D(tr1.x, tl2.y),
+					br1,
+					new Vector3D(tl2.x, br1.y)
+				};
+			}
+			else if ( brInside ) {
+				return new Vector3D[] {
+					tl1,
+					new Vector3D(tr2.x, tl1.y),
+					br2,
+					new Vector3D(tl1.x, br2.y)
+				};
+			}
+			else if ( trInside ) {
+				return new Vector3D[] {
+					new Vector3D(bl1.x, tr2.y),
+					tr2,
+					new Vector3D(tr2.x, br1.y),
+					bl1
+				};
+			}
+			else if ( blInside ) {
+				return new Vector3D[] {
+					new Vector3D(bl2.x, tr1.y),
+					tr1,
+					new Vector3D(tr1.x, br2.y),
+					bl2
+				};
+			}
+			
+		}
+		
+		else if ( count == 2 ) {
+			
+			if ( tlInside && trInside ) {
+				if ( tl1.x >= tl2.x ) {
+					// 1 contains 2
+					System.out.println("1 contains 2");
+					return new Vector3D[] {
+						tl2,
+						tr2,
+						new Vector3D(tr2.x, bl1.y),
+						new Vector3D(tl2.x, bl1.y)
+					};
+				}
+				else {
+					// 2 contains 1
+					System.out.println("2 contains 1");
+					return new Vector3D[] {
+						new Vector3D(bl1.x, tl2.y),
+						new Vector3D(br1.x, tl2.y),
+						br1,
+						bl1
+					};
+				}
+			}
+			else if ( trInside && brInside ) {
+				if ( tl1.y <= tr2.y ) {
+					// 1 contains 2
+					return new Vector3D[] {
+						new Vector3D(tl1.x, tl2.y),
+						tr2,
+						br2,
+						new Vector3D(tl1.x, bl2.y)
+					};
+				}
+				else {
+					// 2 contains 1
+					return new Vector3D[] {
+						tl1,
+						new Vector3D(tr2.x, tl1.y),
+						new Vector3D(tr2.x, bl1.y),
+						bl1
+					};
+				}
+			}
+			else if ( brInside && blInside ) {
+				if ( tl2.x <= tl1.x ) {
+					// 1 contains 2
+					return new Vector3D[] {
+						new Vector3D(tl2.x, tl1.y),
+						new Vector3D(tr2.x, tl1.y),
+						br2,
+						bl2
+					};
+				}
+				else {
+					// 2 contains 1
+					return new Vector3D[] {
+						tl1,
+						tr1,
+						new Vector3D(tr1.x, br2.y),
+						new Vector3D(tl1.x, br2.y)
+					};
+				}
+			}
+			else if ( blInside && tlInside ) {
+				if ( tl2.x >= tl1.x ) {
+					// 1 contains 2
+					return new Vector3D[] {
+						tl2,
+						new Vector3D(tr1.x, tl2.y),
+						new Vector3D(tr1.x, bl2.y),
+						bl2
+					};
+				}
+				else {
+					// 2 contains 1
+					return new Vector3D[] {
+						new Vector3D(tl2.x, tl1.y),
+						tr1,
+						br1,
+						new Vector3D(tl2.x, bl1.y)
+					};
+				}
+			}
+			
+		}
+		
+		if ( count == 3 ) {
+			System.err.println("Windows are rectangular, cannot have exactly 3 corners contained by another window.");
+		}
+		
+		else if ( count == 4 ) {
+			
+			if ( tl1.x <= tl2.x ) {
+				// 1 contains 2
+				return v2;
+			}
+			else {
+				// 2 contains 1
+				return v1;
+			}
+		}
+		
+		System.err.println("Error, window corner count should be between 0 and 4 inclusive.");
 		return null;
 	}
 	
@@ -107,8 +316,8 @@ public class CETOcclusionManager {
 		if ( p1 == OcclusionPolicy.PREVENT || p2 == OcclusionPolicy.PREVENT ) {
 			return OcclusionPolicy.PREVENT;
 		}
-		else if ( p1 == OcclusionPolicy.TRANSPARENCY || p2 == OcclusionPolicy.TRANSPARENCY ) {
-			return OcclusionPolicy.TRANSPARENCY;
+		else if ( p1 == OcclusionPolicy.DEFER || p2 == OcclusionPolicy.DEFER ) {
+			return OcclusionPolicy.DEFER;
 		}
 		return OcclusionPolicy.NONE;
 	}

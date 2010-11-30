@@ -8,7 +8,6 @@ import org.mt4j.input.inputData.AbstractCursorInputEvt;
 import org.mt4j.input.inputData.InputCursor;
 import org.mt4j.input.inputData.MTInputEvent;
 import org.mt4j.input.inputSources.MultipleMiceInputSource;
-import org.mt4j.util.math.Vector3D;
 
 import cet.globalMultiMiceManager.CETConflictEvent;
 import cet.globalMultiMiceManager.CETConflictType;

@@ -7,6 +7,7 @@ import org.mt4j.sceneManagement.AbstractScene;
 import cet.components.visibleComponents.widgets.CETWindow;
 import cet.globalMultiMiceManager.conflictHandlers.ShakeDragConflictHandler;
 import cet.globalMultiMiceManager.occlusion.OcclusionPolicy;
+import cet.globalMultiMiceManager.occlusion.RedBoxOcclusionHandler;
 
 public class WindowTest extends AbstractScene {
 
@@ -17,13 +18,15 @@ public class WindowTest extends AbstractScene {
 		this.registerGlobalInputProcessor(new CursorTracer(mtApplication, this));
 		
 		// create a window
-		CETWindow window1 = mtApplication.createNewWindow("Test Window 1",10,10,0,400,400,OcclusionPolicy.PREVENT);
+		CETWindow window1 = mtApplication.createNewWindow("Test Window 1",10,10,0,400,300,OcclusionPolicy.DEFER);
 		window1.addConflictHandler(new ShakeDragConflictHandler());
+		window1.addOcclusionHandler(new RedBoxOcclusionHandler());
 		this.getCanvas().addChild(window1);
 		
 		// create another window
-		CETWindow window2 = mtApplication.createNewWindow("Test Window 2",450,10,0,400,400);
+		CETWindow window2 = mtApplication.createNewWindow("Test Window 2",450,10,0,600,400,OcclusionPolicy.DEFER);
 		window2.addConflictHandler(new ShakeDragConflictHandler());
+		window2.addOcclusionHandler(new RedBoxOcclusionHandler());
 		this.getCanvas().addChild(window2);
 	}
 	@Override

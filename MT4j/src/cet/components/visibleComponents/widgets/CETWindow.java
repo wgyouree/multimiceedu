@@ -1,53 +1,43 @@
 package cet.components.visibleComponents.widgets;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
-
-import javax.media.opengl.GL;
+import java.util.Map;
 
 import org.mt4j.MTApplication;
 import org.mt4j.components.MTComponent;
-import org.mt4j.components.TransformSpace;
-import org.mt4j.components.clipping.Clip;
-import org.mt4j.components.interfaces.IMTComponent3D;
-import org.mt4j.components.visibleComponents.AbstractVisibleComponent;
 import org.mt4j.components.visibleComponents.font.FontManager;
 import org.mt4j.components.visibleComponents.font.IFont;
 import org.mt4j.components.visibleComponents.shapes.MTPolygon;
 import org.mt4j.components.visibleComponents.shapes.MTRectangle;
 import org.mt4j.components.visibleComponents.widgets.MTTextArea;
-import org.mt4j.input.IMTInputEventListener;
-import org.mt4j.input.inputData.AbstractCursorInputEvt;
-import org.mt4j.input.inputData.InputCursor;
-import org.mt4j.input.inputData.MTInputEvent;
-import org.mt4j.input.inputProcessors.IGestureEventListener;
-import org.mt4j.input.inputProcessors.IInputProcessor;
-import org.mt4j.input.inputProcessors.MTGestureEvent;
-import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragEvent;
-import org.mt4j.input.inputProcessors.componentProcessors.dragProcessor.DragProcessor;
-import org.mt4j.input.inputSources.MultipleMiceInputSource;
 import org.mt4j.util.MTColor;
 import org.mt4j.util.math.Vector3D;
 import org.mt4j.util.math.Vertex;
 
 import processing.core.PGraphics;
-import processing.opengl.PGraphicsOpenGL;
 
 import cet.componentMultiMiceManager.CETcomponentMultiMiceControl;
 import cet.componentMultiMiceManager.CETcomponentMultiMiceControlUI;
 import cet.globalMultiMiceManager.CETConflictEvent;
-import cet.globalMultiMiceManager.CETConflictType;
 import cet.globalMultiMiceManager.ICETConflictHandler;
 import cet.globalMultiMiceManager.ICETConflictListener;
 import cet.globalMultiMiceManager.Size;
 import cet.globalMultiMiceManager.cursors.CursorType;
 import cet.globalMultiMiceManager.listeners.DragConflictListener;
 import cet.globalMultiMiceManager.listeners.ScaleConflictListener;
+import cet.globalMultiMiceManager.occlusion.CETOcclusionEvent;
+import cet.globalMultiMiceManager.occlusion.ICETOcclusionHandler;
+import cet.globalMultiMiceManager.occlusion.ICETOcclusionListener;
 
-public class CETWindow extends MTRectangle implements ICETConflictListener {
+public class CETWindow extends MTRectangle implements ICETConflictListener, ICETOcclusionListener {
 	
 	private MTRectangle contentArea;
 	private MTRectangle titleBar;
+	
+	private Map<CETWindow,Vector3D[]> overlap =
+		new HashMap<CETWindow, Vector3D[]>();
 	
 	private static final float titleBarHeight = 30;
 	private static final float titleMarginLeft = 5;
@@ -60,6 +50,8 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 	private MTTextArea titleTextArea;
 	
 	private List<ICETConflictHandler> conflictHandlers = new ArrayList<ICETConflictHandler>();
+	
+	private List<ICETOcclusionHandler> occlusionHandlers = new ArrayList<ICETOcclusionHandler>();
 	
 	private MTApplication app;
 	
@@ -104,14 +96,14 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		
 		//Add window background
 		this.border = resizeWidth/2;
-		this.contentArea = new ClippedRectangle(border, titleBarHeight+border, z, width-(2*border), height-titleBarHeight-(2*border), applet);
+		this.contentArea = new ClippedRectangle(x+border, y+titleBarHeight+border, z, width-(2*border), height-titleBarHeight-(2*border), applet);
 		this.contentArea.setFillColor(new MTColor(200,200,200,255));
 		this.contentArea.setNoStroke(true);
 		this.contentArea.setPickable(false);
 		super.addChild(this.contentArea);
 		
 		// add title bar
-		this.titleBar = new MTRectangle(0+border, 0+border, width-(2*border), titleBarHeight, applet);
+		this.titleBar = new MTRectangle(x+border, y+border, width-(2*border), titleBarHeight, applet);
 		titleBar.setFillColor(new MTColor(100,100,100,255));
 		titleBar.setNoStroke(true);
 		titleBar.setPickable(false);
@@ -338,6 +330,43 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 		*/
 	}
 	
+	@Override
+	public void drawComponent(PGraphics g) {
+		super.drawComponent(g);
+		CETOcclusionEvent event = new CETOcclusionEvent(
+			overlap,
+			this,
+			g,
+			app
+		);
+		if ( !overlap.isEmpty() ) {
+			processOcclusion(event);
+		}
+		else {
+			postOcclusion(event);
+		}
+	}
+	
+	public void superAddChild(MTComponent child) {
+		super.addChild(child);
+	}
+	
+	public void superRemoveChild(MTComponent child) {
+		super.removeChild(child);
+	}
+	
+	public void addOverlap(CETWindow aWindow, Vector3D[] overlap) {
+		this.overlap.put(aWindow, overlap);
+	}
+	
+	public Vector3D[] getOverlap(CETWindow aWindow) {
+		return this.overlap.get(aWindow);
+	}
+	
+	public void removeOverlap(CETWindow aWindow) {
+		this.overlap.remove(aWindow);
+	}
+	
 	public Size getSize() {
 		return new Size(this.width, this.height);
 	}
@@ -365,6 +394,26 @@ public class CETWindow extends MTRectangle implements ICETConflictListener {
 	public void processConflict(CETConflictEvent event) {
 		for ( ICETConflictHandler handler : conflictHandlers ) {
 			handler.handleConflict(event);
+		}
+	}
+	
+	public void addOcclusionHandler(ICETOcclusionHandler handler) {
+		occlusionHandlers.add(handler);
+	}
+	
+	public void removeOcclusionHandler(ICETOcclusionHandler handler) {
+		occlusionHandlers.remove(handler);
+	}
+	
+	public void processOcclusion(CETOcclusionEvent event) {
+		for ( ICETOcclusionHandler handler : occlusionHandlers ) {
+			handler.handleOcclusion(event);
+		}
+	}
+	
+	public void postOcclusion(CETOcclusionEvent event) {
+		for ( ICETOcclusionHandler handler : occlusionHandlers ) {
+			handler.postOcclusion(event);
 		}
 	}
 
