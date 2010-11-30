@@ -1,0 +1,36 @@
+<project default="zip">
+	<path id="classpath">
+		<fileset dir="./mt4jLibs">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+	<target name="compile">
+		<delete file="cet_example.jar" />
+		<javac srcdir="./src:./examples" destdir="./bin">
+			<classpath refid="classpath" />
+		</javac>
+		<copy todir="bin">
+			<fileset dir="./mt4jLibs">
+				<include name="**/*.jar" />
+			</fileset>
+		</copy>
+	</target>
+	<!--
+	<target name="jar" depends="compile">
+		<jar destfile="cet_example.jar"
+			 basedir="./bin"
+			 includes="**/*.class"
+			 duplicate="preserve">
+			<manifest>
+				<attribute name="Main-Class" value="cet.tests.StartWindowTest" />
+				<attribute name="Class-Path" value="**/*.jar" />
+			</manifest>
+		</jar>
+	</target>
+	-->
+	<target name="zip" depends="compile">
+		<delete file="cet.zip" />
+		<zip destfile="cet.zip"
+			 basedir="./" />
+	</target>
+</project>
