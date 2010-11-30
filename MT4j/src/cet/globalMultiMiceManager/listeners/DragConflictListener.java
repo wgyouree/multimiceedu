@@ -21,18 +21,16 @@ public class DragConflictListener extends AbstractConflictListener {
 	}
 	
 	public void inputDetected(MTInputEvent inEvt) {
-		//if ( !(component instanceof CETWindow) || app.checkOcclusionPolicy((CETWindow)component) ) {
-			AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
-			InputCursor cursor = cursorInputEvt.getCursor();
-			IMTComponent3D target = component;
-			Vector3D vector = new Vector3D(cursor.getCurrentEvtPosX(), cursor.getCurrentEvtPosY());
-			//Put target on top -> draw on top of others
-			if (target instanceof MTComponent){
-				MTComponent baseComp = (MTComponent)target;
-				baseComp.sendToFront();
-			}
-			previousPos = vector;
-		//}
+		AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
+		InputCursor cursor = cursorInputEvt.getCursor();
+		IMTComponent3D target = component;
+		Vector3D vector = new Vector3D(cursor.getCurrentEvtPosX(), cursor.getCurrentEvtPosY());
+		//Put target on top -> draw on top of others
+		if (target instanceof MTComponent){
+			MTComponent baseComp = (MTComponent)target;
+			baseComp.sendToFront();
+		}
+		previousPos = vector;
 	}
 	
 	public void inputUpdated(MTInputEvent inEvt) {
