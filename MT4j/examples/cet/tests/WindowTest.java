@@ -28,6 +28,10 @@ public class WindowTest extends AbstractScene {
 		window2.addConflictHandler(new ShakeDragConflictHandler());
 		window2.addOcclusionHandler(new RedBoxOcclusionHandler());
 		this.getCanvas().addChild(window2);
+		
+		// create another window
+		CETWindow window3 = mtApplication.createNewWindow("Test Window 3",10,400,0,200,200,OcclusionPolicy.PREVENT);
+		this.getCanvas().addChild(window3);
 	}
 	@Override
 	public void init() {}

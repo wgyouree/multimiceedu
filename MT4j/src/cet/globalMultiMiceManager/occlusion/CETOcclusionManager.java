@@ -78,6 +78,107 @@ public class CETOcclusionManager {
 		
 		System.out.println("Box 2: TL: " + tl2.x + "," + tl2.y + " TR: " + tr2.x + "," + tr2.y + " BL: " + bl2.x + "," + bl2.y + " BR: " + br2.x + "," + br2.y);
 		
+		// is box 1 inside box 2?
+		if ( tl2.x <= tl1.x && tl2.y <= tl1.y &&
+			 br2.x >= br1.x && br2.y >= br1.y ) {
+			return v1;
+		}
+		
+		// is box 2 inside box 1?
+		if ( tl1.x <= tl2.x && tl1.y <= tl2.y &&
+			 br1.x >= br2.x && br1.y >= br2.y ) {
+			return v2;
+		}
+		
+		// 1
+		if ( tl2.x <= tl1.x && tl2.y <= tl1.y && tr2.x >= tr1.x && tr2.y <= tr1.y && br2.y >= tr1.y ) {
+			System.out.println("Situation 5 - 2 contains 1");
+			return new Vector3D[] {
+				tl1,
+				tr1,
+				new Vector3D(tr1.x, br2.y),
+				new Vector3D(tl1.x, br2.y)
+			};
+		}
+		
+		// 2
+		if ( tl1.x <= tl2.x && tl1.y <= tl2.y && tr1.x >= tr2.x && tr1.y <= tr2.y && br1.y >= tr2.y ) {
+			System.out.println("Situation 5 - 1 contains 2");
+			return new Vector3D[] {
+				tl2,
+				tr2,
+				new Vector3D(tr2.x, bl1.y),
+				new Vector3D(tl2.x, bl1.y)
+			};
+		}
+		
+		// 3
+		if ( tl1.x <= tr2.x && tl1.y <= tr2.y && bl1.x <= br2.x && bl1.y >= br2.y && bl2.x <= bl1.x ) {
+			System.out.println("Situation 6 - 1 contains 2");
+			return new Vector3D[] {
+				new Vector3D(tl1.x, tl2.y),
+				tr2,
+				br2,
+				new Vector3D(tl1.x, bl2.y)
+			};
+		}
+		
+		// 4
+		if ( tl2.x <= tr1.x && tl2.y <= tr1.y && bl2.x <= br1.x && bl2.y >= br1.y && bl1.x <= bl2.x ) {
+			System.out.println("Situation 6 - 2 contains 1");
+			return new Vector3D[] {
+				new Vector3D(tl2.x, tl1.y),
+				tr1,
+				br1,
+				new Vector3D(tl2.x, bl1.y)
+			};
+		}
+		
+		// 5
+		if ( tl1.x <= bl2.x && tl1.y <= bl2.y && tr1.x >= br2.x && tr1.y <= br2.y && tr1.y >= tr2.y ) {
+			System.out.println("Situation 7 - 1 contains 2");
+			return new Vector3D[] {
+				new Vector3D(tl2.x, tl1.y),
+				new Vector3D(tr2.x, tl1.y),
+				br2,
+				bl2
+			};
+		}
+		
+		// 6
+		if ( tl2.x <= bl1.x && tl2.y <= bl1.y && tr2.x >= br1.x && tr2.y <= br2.y && tr1.y <= tr2.y ) {
+			System.out.println("Situation 7 - 2 contains 1");
+			return new Vector3D[] {
+				new Vector3D(bl1.x, tl2.y),
+				new Vector3D(br1.x, tl2.y),
+				br1,
+				bl1
+			};
+		}
+		
+		// 7
+		if ( tl2.x <= tl1.x && tl2.y <= tl1.y && bl2.x <= bl1.x && bl2.y >= bl1.y && br2.x >= bl1.x ) {
+			System.out.println("Situation 8 - 2 contains 1");
+			return new Vector3D[] {
+				tl1,
+				new Vector3D(tr2.x, tl1.y),
+				new Vector3D(tr2.x, bl1.y),
+				bl1
+			};
+		}
+		
+		// 8
+		if ( tl2.x >= tl1.x && tr1.y <= tl2.y && bl2.x <= br1.x && bl2.y <= br1.y && br2.x >= br1.x ) {
+			System.out.println("Situation 8 - 1 contains 2");
+			return new Vector3D[] {
+				tl2,
+				new Vector3D(tr1.x, tl2.y),
+				new Vector3D(tr1.x, bl2.y),
+				bl2
+			};
+		}
+		
+		
 		boolean tlInside = false;
 		boolean trInside = false;
 		boolean brInside = false;
@@ -106,61 +207,6 @@ public class CETOcclusionManager {
 			blInside = true;
 			count++;
 		}
-		
-		// FIXME: this is a hack to get this working
-		//boolean tltr1Contains2 = false;
-		//boolean tltr2Contains1 = false;
-		if ( br1.x <= tr2.x && br1.y >= tr2.y && br1.x >= tl2.x && br1.y <= br2.y) {
-			//tltr2Contains1 = true;
-			if ( trInside ) {
-				// 2 contains 1
-				System.out.println("2 contains 1");
-				return new Vector3D[] {
-					new Vector3D(bl1.x, tl2.y),
-					new Vector3D(br1.x, tl2.y),
-					br1,
-					bl1
-				};
-			}
-		}
-		else if ( tr1.x <= tr2.x && tr1.y >= tr2.y && tr1.x >= bl2.x && tr1.y <= br2.y){
-			//tltr1Contains2 = true;
-			if ( brInside ) {
-				// 2 contains 1
-				return new Vector3D[] {
-					tl1,
-					tr1,
-					new Vector3D(tr1.x, br2.y),
-					new Vector3D(tl1.x, br2.y)
-				};
-			}
-		}
-		else if ( br2.x <= tr1.x && br2.y >= tr1.y && br2.x >= tl1.x && br2.y <= br1.y) {
-			//tltr2Contains1 = true;
-			if ( tlInside ) {
-				// 2 contains 1
-				System.out.println("2 contains 1");
-				return new Vector3D[] {
-					new Vector3D(bl2.x, tl1.y),
-					new Vector3D(br2.x, tl2.y),
-					br2,
-					bl2
-				};
-			}
-		}
-		else if ( tr2.x <= tr1.x && tr2.y >= tr1.y && tr2.x >= bl1.x && tr2.y <= br1.y){
-			//tltr1Contains2 = true;
-			if ( blInside ) {
-				// 2 contains 1
-				return new Vector3D[] {
-					tl2,
-					tr2,
-					new Vector3D(tr2.x, br1.y),
-					new Vector3D(tl2.x, br1.y)
-				};
-			}
-		}
-		// END HACK
 		
 		if ( count == 0 ) {
 			return null;
@@ -202,7 +248,7 @@ public class CETOcclusionManager {
 			}
 			
 		}
-		
+		/*
 		else if ( count == 2 ) {
 			
 			if ( tlInside && trInside ) {
@@ -289,21 +335,10 @@ public class CETOcclusionManager {
 			}
 			
 		}
+		*/
 		
 		if ( count == 3 ) {
 			System.err.println("Windows are rectangular, cannot have exactly 3 corners contained by another window.");
-		}
-		
-		else if ( count == 4 ) {
-			
-			if ( tl1.x <= tl2.x ) {
-				// 1 contains 2
-				return v2;
-			}
-			else {
-				// 2 contains 1
-				return v1;
-			}
 		}
 		
 		System.err.println("Error, window corner count should be between 0 and 4 inclusive.");
