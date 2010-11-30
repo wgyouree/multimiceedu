@@ -52,6 +52,7 @@ public abstract class AbstractConflictListener implements IMTInputEventListener 
 			}
 			switch (cursorInputEvt.getId()) {
 			case AbstractCursorInputEvt.INPUT_DETECTED:
+				System.out.println("Input Detected on TitleBar");
 				if ( theDevice >= 0 && device >= 0 ) {
 					// conflict
 					listener.processConflict(new CETConflictEvent(inEvt, CETConflictType.DRAG, component, app, new Integer[] { device, theDevice }) );
@@ -61,17 +62,19 @@ public abstract class AbstractConflictListener implements IMTInputEventListener 
 					device = theDevice;
 				}
 				System.out.println("Input detected on: " + target + " at " + cursor.getCurrentEvtPosX() + "," + cursor.getCurrentEvtPosY());
+				System.out.println("Device = " + theDevice);
 				break;
 			case AbstractCursorInputEvt.INPUT_UPDATED:
 				if ( theDevice >= 0 && device >= 0 && theDevice != device ) {
 					// conflict
-					listener.processConflict(new CETConflictEvent(inEvt, CETConflictType.DRAG, component, app, new Integer[] { device, theDevice }) );
-					System.out.println("Conflict detected");
+					//listener.processConflict(new CETConflictEvent(inEvt, CETConflictType.DRAG, component, app, new Integer[] { device, theDevice }) );
+					//System.out.println("Conflict detected");
 				} else if ( theDevice >= 0 ) {
 					inputUpdated(inEvt);
 					device = theDevice;
 				}
-				System.out.println("Input updated on: " + target + " at " + cursor.getCurrentEvtPosX() + "," + cursor.getCurrentEvtPosY());			
+				System.out.println("Input updated on: " + target + " at " + cursor.getCurrentEvtPosX() + "," + cursor.getCurrentEvtPosY());
+				System.out.println("Device = " + theDevice);
 				break;
 			case AbstractCursorInputEvt.INPUT_ENDED:
 				if ( device == theDevice ) {
@@ -87,6 +90,7 @@ public abstract class AbstractConflictListener implements IMTInputEventListener 
 					device = theDevice;
 				}
 				System.out.println("Input ended on: " + target + " at " + cursor.getCurrentEvtPosX() + "," + cursor.getCurrentEvtPosY());
+				System.out.println("Device = " + theDevice);
 				break;
 			default:
 				break;
