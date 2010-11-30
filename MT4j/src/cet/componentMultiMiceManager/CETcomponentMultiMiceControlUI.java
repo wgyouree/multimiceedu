@@ -81,7 +81,7 @@ public class CETcomponentMultiMiceControlUI extends MTComponent implements IMTIn
 				if( mouse.getDeviceNum() !=  globalMiceManager.getInstructorDevice() ){
 					MTEllipse curEllipse = new MTEllipse( papplet, new Vector3D(cx, cy), iconRadius*2, iconRadius*2, curDegree, eachDegree, 10, MTEllipse.pie);
 					MTColor color = mouse.getCursorIcon().getFillColor();
-					if( compMiceControl.isDeviceAccessible(mouse.getDeviceNum()) ) {
+					if( compMiceControl.isDevicePermitted(mouse.getDeviceNum()) ) {
 						curEllipse.setFillColor( color );
 						curEllipse.setStrokeColor( color );
 					}
@@ -135,7 +135,7 @@ public class CETcomponentMultiMiceControlUI extends MTComponent implements IMTIn
 				if( mouse.getDeviceNum() !=  globalMiceManager.getInstructorDevice() ){
 					final MTEllipse curEllipse = new MTEllipse( papplet, new Vector3D(x, y), ctrlPieRadius*2, ctrlPieRadius*2, curDegree, eachDegree, 45, MTEllipse.pie);
 					final MTColor color = mouse.getCursorIcon().getFillColor();
-					if( compMiceControl.isDeviceAccessible(mouse.getDeviceNum()) ) {
+					if( compMiceControl.isDevicePermitted(mouse.getDeviceNum()) ) {
 						curEllipse.setFillColor( color );
 						curEllipse.setStrokeColor( color );
 					}
@@ -152,7 +152,7 @@ public class CETcomponentMultiMiceControlUI extends MTComponent implements IMTIn
 									&& ((MultipleMiceInputSource)event.getSource()).getEventSourceDevice() == globalMiceManager.getInstructorDevice()
 									&& ((AbstractCursorInputEvt)event).getId() == AbstractCursorInputEvt.INPUT_ENDED ){
 								int device = ctrlDetail.get(curEllipse);
-								if( compMiceControl.isDeviceAccessible(device) ) {
+								if( compMiceControl.isDevicePermitted(device) ) {
 									compMiceControl.removeStudentDevice(device);
 									curEllipse.setFillColor( new MTColor((int)(color.getR()*dimFactor), (int)(color.getG()*dimFactor), (int)(color.getB()*dimFactor), color.getAlpha()) );
 									curEllipse.setStrokeColor( new MTColor((int)(color.getR()*dimFactor), (int)(color.getG()*dimFactor), (int)(color.getB()*dimFactor), color.getAlpha()) );
