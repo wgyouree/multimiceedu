@@ -32,7 +32,7 @@ public class ClippedRectangle extends MTRectangle {
 		clipRect.setBoundsBehaviour(MTRectangle.BOUNDS_ONLY_CHECK);
 		this.clip = new Clip(gl, clipRect);
 		this.setChildClip(this.clip);
-		this.drawInnerBorder = true;
+		this.drawInnerBorder = false;
 		
 	}
 	
