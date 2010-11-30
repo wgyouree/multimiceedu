@@ -1,0 +1,9 @@
+Collaborative Education Toolkit
+W. Greg Youree and Mengdie Hu
+
+The cet.zip file can be imported as an Eclipse project. This
+is the easiest way to use the Collaborative Education Toolkit.
+
+Note: Requires Windows 7 or a version of linux with support
+for multiple mice. Only tested with Windows 7. If you use linux,
+you'll need to edit the Settings.txt file.
