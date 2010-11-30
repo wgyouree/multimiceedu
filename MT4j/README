@@ -1,0 +1,43 @@
+Collaborative Education Toolkit
+W. Greg Youree and Mengdie Hu
+
+Requires Windows 7 for multiple mice support.
+
+To run,
+
+include all jars in "mt4jLibs" folder in classpath
+
+run the cet.tests.StartWindowTest program which is located
+in the "examples" directory.
+
+It may be easiest to do this if you open the archive as
+an Eclipse project.
+
+Everything in the "cet" packages was written by our team,
+and some of the MT4j source code was modified.
+
+Features -
+
+Hierarchical Cursors ( Instructor and Student )
+	Instructor Cursor takes precedence
+	Each cursor has a unique color
+	
+Floor Controls on a per window basis ( Instructor controls )
+
+Conflict Policies can be created by the application developer
+	- Implement AbstractConflictListener to provide new conflict
+		resolution functionality
+	- implement ICETOcclusionHandler to provide new occlusion
+		mechanisms
+		
+Default Conflict Policies
+	- can prevent windows from overlapping
+	- can get intersection of windows in order to provide
+	    some form of occlusion resolution such as transparency
+	- can use ShakeDragConflictHandler to disallow more than
+		one cursor to drag a window
+	- supports collaborative resizing of windows, but could also
+		implement a different conflict handler
+
+
+	
