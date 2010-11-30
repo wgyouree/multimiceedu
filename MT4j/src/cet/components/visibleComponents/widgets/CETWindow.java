@@ -112,7 +112,7 @@ public class CETWindow extends MTRectangle implements ICETConflictListener, ICET
 		// Register Floor Controls for this component and create UI over title Bar
 		if( app.getCETMultiMiceManager() != null ) {
 			this.floorControl = new CETcomponentMultiMiceControl(app.getCETMultiMiceManager());
-			this.floorControlUI = this.floorControl.createUI( (int)(titleMarginLeft + titleBarHeight/2), (int)(titleMarginTop + titleBarHeight/2), applet);
+			this.floorControlUI = this.floorControl.createUI( (int)(x + titleMarginLeft + titleBarHeight/2), (int)(y + titleMarginTop + titleBarHeight/2), applet);
 			super.addChild( floorControlUI );
 			floorControlUI.sendToFront();
 		}
