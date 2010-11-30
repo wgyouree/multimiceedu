@@ -2,5 +2,5 @@ package cet.globalMultiMiceManager.occlusion;
 
 public enum OcclusionPolicy {
 
-	NONE, PREVENT, TRANSPARENCY
+	NONE, PREVENT, DEFER
 }
