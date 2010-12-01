@@ -43,7 +43,6 @@ public class CETButton extends MTRectangle implements ActionListener{
 	private ArrayList<ActionListener> registeredActionListeners;
 	
 	private CETMultipleMiceManager globalMiceManager;
-	private CETcomponentMultiMiceControl floorControl;
 	private CETcomponentMultiMiceControlUI floorControlUI;
 	
 	private WeakHashMap<Integer, MTRectangle> micePressed;
@@ -161,6 +160,8 @@ public class CETButton extends MTRectangle implements ActionListener{
 						if( floorControl.isDevicePermitted(device) ) {
 							MTRectangle box = createBox(device);
 							this.addChild(box);		
+							floorControlUI.sendToFront();
+							labelBox.sendToFront();
 							micePressed.put(device, box);
 							micePressedNum++;
 						}
@@ -207,6 +208,8 @@ public class CETButton extends MTRectangle implements ActionListener{
 							int device = ((MultipleMiceInputSource)event.getSource()).getEventSourceDevice();
 							MTRectangle box = createBox( device );
 							addChild(box);
+							floorControlUI.sendToFront();
+							labelBox.sendToFront();
 							micePressed.put(device, box);
 							micePressedNum++;
 							if( micePressedNum == miceTotalNum ) {
