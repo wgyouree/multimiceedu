@@ -124,7 +124,7 @@ public class CETButton extends MTRectangle implements ActionListener{
 		MTRectangle box = null;
 		if( miceTotalNum > 0 ) {
 			float boxWidth = this.width / miceTotalNum;
-			box = new MTRectangle(top + boxWidth*micePressedNum, top, boxWidth, this.height, papplet);
+			box = new MTRectangle(left + boxWidth*micePressedNum, top, boxWidth, this.height, papplet);
 			MTColor boxColor = globalMiceManager.getMouseInfo(device).getCursorIconColor();
 			box.setFillColor( new MTColor( boxColor.getR(), boxColor.getG(), boxColor.getB(), 150) );
 			box.setNoStroke(true);
@@ -160,12 +160,12 @@ public class CETButton extends MTRectangle implements ActionListener{
 						if( floorControl.isDevicePermitted(device) ) {
 							MTRectangle box = createBox(device);
 							this.addChild(box);		
-							floorControlUI.sendToFront();
-							labelBox.sendToFront();
 							micePressed.put(device, box);
 							micePressedNum++;
 						}
 					}		
+					floorControlUI.sendToFront();
+					labelBox.sendToFront();
 				}
 			}
 		}
@@ -185,7 +185,6 @@ public class CETButton extends MTRectangle implements ActionListener{
 	}
 	
 	private void fireAction(String command) {
-		System.out.println(command);
 		for( ActionListener l : registeredActionListeners )
 			l.actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, command) );
 	}
@@ -204,8 +203,10 @@ public class CETButton extends MTRectangle implements ActionListener{
 					case AbstractCursorInputEvt.INPUT_ENDED:
 						drawButton(false);
 						if( floorControl.isCollaborative() 
-							&& ((MultipleMiceInputSource)event.getSource()).getEventSourceDevice() != globalMiceManager.getInstructorDevice() ) {
+							&& ((MultipleMiceInputSource)event.getSource()).getEventSourceDevice() != globalMiceManager.getInstructorDevice()) {
 							int device = ((MultipleMiceInputSource)event.getSource()).getEventSourceDevice();
+							if( micePressed.containsKey(device))
+								break;
 							MTRectangle box = createBox( device );
 							addChild(box);
 							floorControlUI.sendToFront();
@@ -220,8 +221,13 @@ public class CETButton extends MTRectangle implements ActionListener{
 								micePressedNum = 0;
 							}
 						}
-						else
+						else {
+							for( MTRectangle b : micePressed.values() )
+								removeChild( b );
+							micePressed.clear();			
+							micePressedNum = 0;
 							fireAction("Button clicked");
+						}
 						break;
 					default:
 						break;
