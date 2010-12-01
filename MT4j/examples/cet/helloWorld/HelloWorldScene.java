@@ -8,6 +8,8 @@ import org.mt4j.sceneManagement.AbstractScene;
 import org.mt4j.util.MTColor;
 import org.mt4j.util.math.Vector3D;
 
+import cet.components.visibleComponents.widgets.CETButton;
+
 public class HelloWorldScene extends AbstractScene {
 
 	public HelloWorldScene(MTApplication mtApplication, String name) {
@@ -33,6 +35,9 @@ public class HelloWorldScene extends AbstractScene {
 		textField.setPositionGlobal(new Vector3D(mtApplication.width/2f, mtApplication.height/2f));
 		//Add the textfield to our canvas
 		this.getCanvas().addChild(textField);
+		
+		CETButton button = new CETButton("Press me", 200, 200, 150, 50, mtApplication);
+		this.getCanvas().addChild( button );
 	}
 	@Override
 	public void init() {}

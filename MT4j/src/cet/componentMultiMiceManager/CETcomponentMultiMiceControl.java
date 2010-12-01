@@ -1,5 +1,7 @@
 package cet.componentMultiMiceManager;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 
 import org.mt4j.input.inputData.AbstractCursorInputEvt;
@@ -24,6 +26,8 @@ public class CETcomponentMultiMiceControl implements ICETMiceChangeListener{
 	private boolean isCollaborative;
 	private CETcomponentMultiMiceControlUI ui = null;
 	
+	protected ArrayList<ActionListener> listenerList;
+	
 	/**
 	 * Floor Control for components
 	 * @param m global multiple mice manager
@@ -33,18 +37,23 @@ public class CETcomponentMultiMiceControl implements ICETMiceChangeListener{
 		m.addMultiMiceChangeListener(this);
 		studentDeviceList = new ArrayList<Integer>();
 		isCollaborative = false;
-		addAllStudentDevices();
+		listenerList = new ArrayList<ActionListener>();
+		addAllStudentDevices();		
 	}
 	
 	public void addStudentDevice( int device ) {
-		if( !studentDeviceList.contains(device) && globalMMmanager.getInstructorDevice() != device )
+		if( !studentDeviceList.contains(device) && globalMMmanager.getInstructorDevice() != device ) {
 			studentDeviceList.add( device );
+			fireAction("Student device added.");
+		}
 	}
 	
 	public void removeStudentDevice( int device ) {
 		int index = studentDeviceList.indexOf(device);
-		if( index > -1 )
+		if( index > -1 ) {
 			studentDeviceList.remove( index );
+			fireAction("Student device removed.");
+		}
 	}
 	
 	public void addAllStudentDevices() {
@@ -53,10 +62,12 @@ public class CETcomponentMultiMiceControl implements ICETMiceChangeListener{
 			if( device != globalMMmanager.getInstructorDevice() )
 				studentDeviceList.add( device );
 		}
+		fireAction("Student device added.");
 	}
 	
 	public void removeAllStudentDevices() {
 		studentDeviceList.clear();
+		fireAction("Student device removed.");
 	}
 	
 	public ArrayList<Integer> getStudentDeviceList(){
@@ -75,6 +86,7 @@ public class CETcomponentMultiMiceControl implements ICETMiceChangeListener{
 	
 	public void setCollaborative( boolean is ) {
 		isCollaborative = is;
+		fireAction("Collaborative mode changed.");
 	}
 	
 	// Multiple mice change events handling
@@ -86,18 +98,33 @@ public class CETcomponentMultiMiceControl implements ICETMiceChangeListener{
 	}
 	
 	public void deviceDisconnected(int device) {
-		if( studentDeviceList.contains(device) )
-			studentDeviceList.remove( device );
+		removeStudentDevice( device );
 		if( ui != null )
 			ui.update();
 	}
 
 	public void instructorChanged(int device) {
 		int instructorDevice = globalMMmanager.getInstructorDevice();
-		if( studentDeviceList.contains( instructorDevice ) ) 
-			studentDeviceList.remove( instructorDevice );
+		removeStudentDevice( instructorDevice );
 		if( ui != null )
 			ui.update();
+	}
+	
+	public void addEventListener( ActionListener l ) {
+		listenerList.add(l);
+	}
+	
+	public void removeEventListener( ActionListener l ) {
+		listenerList.remove(l);
+	}
+	
+	public ArrayList<ActionListener> getAllEventListeners() {
+		return listenerList;
+	}
+	
+	private void fireAction(String command) {
+		for( ActionListener l : listenerList )
+			l.actionPerformed( new ActionEvent( this, ActionEvent.ACTION_PERFORMED, command) );
 	}
 	
 	/**

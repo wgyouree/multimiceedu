@@ -25,12 +25,12 @@ public class CETcomponentMultiMiceControlUI extends MTComponent implements IMTIn
 	private PApplet papplet;
 	private CETMultipleMiceManager globalMiceManager;
 	private CETcomponentMultiMiceControl compMiceControl;
-	private int iconRadius = 5;
+	private int iconRadius = 10;
 	private WeakHashMap<Integer, MTEllipse> iconDetail = new WeakHashMap<Integer, MTEllipse>();
 	private MTEllipse iconCollab;
-	private int ctrlRadius = 50;
-	private int ctrlPieRadius = ctrlRadius - 5;
-	private int ctrlCollabRadius = 20;
+	private int ctrlRadius = 100;
+	private int ctrlPieRadius = ctrlRadius - 10;
+	private int ctrlCollabRadius = 40;
 	private WeakHashMap<MTEllipse, Integer> ctrlDetail = new WeakHashMap<MTEllipse, Integer>();
 	private MTEllipse floorControl;
 	private final static float dimFactor = 0.4f;
@@ -49,9 +49,10 @@ public class CETcomponentMultiMiceControlUI extends MTComponent implements IMTIn
 		cx = x;
 		cy = y;
 		
-		iconCollab = new MTEllipse( papplet, new Vector3D(cx, cy), iconRadius*2-6, iconRadius*2-6 );
+		iconCollab = new MTEllipse( papplet, new Vector3D(cx, cy), iconRadius-6, iconRadius-6 );
 		iconCollab.setFillColor( new MTColor(0, 0, 0) );
 		iconCollab.setNoStroke(true);
+		iconCollab.setPickable(false);
 
 		update();
 	}
@@ -66,8 +67,9 @@ public class CETcomponentMultiMiceControlUI extends MTComponent implements IMTIn
 					hideControl();
 				else
 					popUpControl( cursorEvt.getPosition() );
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	public void update(){
@@ -79,7 +81,7 @@ public class CETcomponentMultiMiceControlUI extends MTComponent implements IMTIn
 
 			for( MouseInfo mouse : globalMiceManager.getDeviceToMouseInfo().values()) {
 				if( mouse.getDeviceNum() !=  globalMiceManager.getInstructorDevice() ){
-					MTEllipse curEllipse = new MTEllipse( papplet, new Vector3D(cx, cy), iconRadius*2, iconRadius*2, curDegree, eachDegree, 10, MTEllipse.pie);
+					MTEllipse curEllipse = new MTEllipse( papplet, new Vector3D(cx, cy), iconRadius, iconRadius, curDegree, eachDegree, 10, MTEllipse.pie);
 					MTColor color = mouse.getCursorIcon().getFillColor();
 					if( compMiceControl.isDevicePermitted(mouse.getDeviceNum()) ) {
 						curEllipse.setFillColor( color );
@@ -105,8 +107,9 @@ public class CETcomponentMultiMiceControlUI extends MTComponent implements IMTIn
 	}
 	
 	public void popUpControl( Vector3D position ){
-		float x = position.getX();
-		float y = position.getY();
+		float x = cx + ctrlRadius;
+		float y = cy + ctrlRadius;	
+		
 		if( x - ctrlRadius < 0 )
 			x = ctrlRadius;
 		if( x + ctrlRadius > papplet.width )
@@ -120,7 +123,7 @@ public class CETcomponentMultiMiceControlUI extends MTComponent implements IMTIn
 			float eachDegree = (float)Math.toRadians( 360/ (globalMiceManager.getMiceNumber() - 1) );
 			float curDegree = 0;
 			
-			floorControl = new MTEllipse( papplet, new Vector3D(x, y), ctrlRadius*2, ctrlRadius*2 );
+			floorControl = new MTEllipse( papplet, new Vector3D(x, y), ctrlRadius, ctrlRadius );
 			floorControl.setFillColor( new MTColor(255, 255, 255, 100) );
 			floorControl.setNoStroke(true);
 			floorControl.addInputListener( new IMTInputEventListener(){
@@ -133,7 +136,7 @@ public class CETcomponentMultiMiceControlUI extends MTComponent implements IMTIn
 
 			for( MouseInfo mouse : globalMiceManager.getDeviceToMouseInfo().values()) {
 				if( mouse.getDeviceNum() !=  globalMiceManager.getInstructorDevice() ){
-					final MTEllipse curEllipse = new MTEllipse( papplet, new Vector3D(x, y), ctrlPieRadius*2, ctrlPieRadius*2, curDegree, eachDegree, 45, MTEllipse.pie);
+					final MTEllipse curEllipse = new MTEllipse( papplet, new Vector3D(x, y), ctrlPieRadius, ctrlPieRadius, curDegree, eachDegree, 45, MTEllipse.pie);
 					final MTColor color = mouse.getCursorIcon().getFillColor();
 					if( compMiceControl.isDevicePermitted(mouse.getDeviceNum()) ) {
 						curEllipse.setFillColor( color );
@@ -174,7 +177,7 @@ public class CETcomponentMultiMiceControlUI extends MTComponent implements IMTIn
 				}
 			}
 			
-			final MTEllipse collab = new MTEllipse(  papplet, new Vector3D(x, y), ctrlCollabRadius*2, ctrlCollabRadius*2 );
+			final MTEllipse collab = new MTEllipse(  papplet, new Vector3D(x, y), ctrlCollabRadius, ctrlCollabRadius );
 			final MTTextArea collabLabel = new MTTextArea( papplet );
 			collab.removeAllGestureEventListeners();
 			collabLabel.setPickable(false);
