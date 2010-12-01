@@ -104,7 +104,7 @@ public class CETWindow extends MTRectangle implements ICETConflictListener, ICET
 		
 		// add title bar
 		this.titleBar = new MTRectangle(x+border, y+border, width-(2*border), titleBarHeight, applet);
-		titleBar.setFillColor(new MTColor(100,100,100,255));
+		titleBar.setFillColor(new MTColor(150,150,150,255));
 		titleBar.setNoStroke(true);
 		titleBar.setPickable(false);
 		super.addChild(titleBar);
