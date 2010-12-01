@@ -56,7 +56,6 @@ public class CETWindow extends MTRectangle implements ICETConflictListener, ICET
 	
 	private MTApplication app;
 	
-	private CETcomponentMultiMiceControl floorControl;
 	private CETcomponentMultiMiceControlUI floorControlUI;
 	
 	private float width;

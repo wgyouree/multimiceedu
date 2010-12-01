@@ -34,7 +34,7 @@ public class MouseInfo {
 	public static final MTColor gray = new MTColor(128, 128, 128, 180);
 	public static final MTColor black = new MTColor(0, 0, 0, 180);
 	public static final MTColor white = new MTColor(255, 255, 255, 180);
-	public static final MTColor[] basicColorList = {red, green, yellow, blue, pink, cyan, orange, brown, purple, gray, black, white};
+	public static final MTColor[] basicColorList = {red, green, yellow, blue, cyan, orange, brown, pink, purple, gray, black, white};
 	
 	/** The device. */
 	private int device;

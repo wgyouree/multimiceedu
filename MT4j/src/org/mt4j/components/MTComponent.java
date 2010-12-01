@@ -193,6 +193,8 @@ public class MTComponent implements IMTComponent3D, IMTInputEventListener, IGest
 	private static final int invPrecisionThreshold = 1000;
 	private static final int reOrthogonalizeThreshold = 1500;
 	
+	protected CETcomponentMultiMiceControl floorControl = null;
+	
 	/**
 	 * Creates a new component. The component has no initial visual representation.
 	 * 
@@ -3123,4 +3125,7 @@ public class MTComponent implements IMTComponent3D, IMTInputEventListener, IGest
 		return "\"" + this.getName() + "\"" + " [" + super.toString() + "]";
 	}
 
+	public CETcomponentMultiMiceControl getComponentFloorControl(){
+		return floorControl;
+	}
 }

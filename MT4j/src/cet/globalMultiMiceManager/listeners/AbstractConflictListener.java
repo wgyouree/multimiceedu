@@ -42,7 +42,12 @@ public abstract class AbstractConflictListener implements IMTInputEventListener 
 
 	@Override
 	public boolean processInputEvent(MTInputEvent inEvt) {
-		if (inEvt instanceof AbstractCursorInputEvt) { //Most input events in MT4j are an instance of AbstractCursorInputEvt (mouse, multi-touch..)
+		if( component == null ){
+			
+		}
+		else if ( ( component.getComponentFloorControl() != null && component.getComponentFloorControl().isEventSourcePermitted(inEvt) )
+				|| ( component.getComponentFloorControl() == null && inEvt instanceof AbstractCursorInputEvt ) ) {
+	//	if (inEvt instanceof AbstractCursorInputEvt) { //Most input events in MT4j are an instance of AbstractCursorInputEvt (mouse, multi-touch..)
 			AbstractCursorInputEvt cursorInputEvt = (AbstractCursorInputEvt) inEvt;
 			InputCursor cursor = cursorInputEvt.getCursor();
 			IMTComponent3D target = component;
